@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>arcade set — &lt;img&gt; context test (light + dark)</title>
+<style>
+  body { margin:0; font-family:system-ui,sans-serif; }
+  section { padding:32px 24px; display:flex; flex-direction:column; gap:18px; align-items:center; }
+  section.dark { background:#0d1117; color:#8B949E; }
+  section.light { background:#ffffff; color:#57606a; }
+  .col { width:100%; max-width:900px; display:flex; flex-direction:column; gap:14px; }
+  .col img { width:100%; display:block; }
+  p.tag { font-size:12px; letter-spacing:.05em; margin:0; }
+</style>
+</head>
+<body>
+  <!-- Loaded exactly like GitHub loads it: as a plain <img src>, never
+       inline. If something here only animates when the file is opened
+       directly (file://), it's relying on a document-only feature and
+       would NOT animate in the real README. -->
+  <section class="dark">
+    <p class="tag">&lt;img&gt; context — GitHub DARK theme approximation</p>
+    <div class="col">
+      <img src="../assets/svg/header.svg" alt="header">
+      <img src="../assets/svg/divider-cyan.svg" alt="divider cyan">
+      <img src="../assets/svg/divider-green.svg" alt="divider green">
+    </div>
+  </section>
+  <section class="light">
+    <p class="tag">&lt;img&gt; context — GitHub LIGHT theme approximation</p>
+    <div class="col">
+      <img src="../assets/svg/header.svg" alt="header">
+      <img src="../assets/svg/divider-cyan.svg" alt="divider cyan">
+      <img src="../assets/svg/divider-green.svg" alt="divider green">
+    </div>
+  </section>
+</body>
+</html>

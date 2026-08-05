@@ -1,0 +1,58 @@
+name: Update arcade header set
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # daily at 06:00 UTC -- refreshes header.svg's live commit count
+  workflow_dispatch: {}    # allow manual runs from the Actions tab / gh CLI
+
+permissions:
+  contents: write          # needed for git-auto-commit-action to push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      # header.svg's text/palette/timing are deterministic (no
+      # randomness), so this is a no-op diff on any day the live commit
+      # count didn't change. If GH_PAT is missing or the API call fails,
+      # build_header.py exits non-zero and never touches header.svg --
+      # same fail-safe posture as every other generator in this repo.
+      - name: Generate header.svg
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          python scripts/build_header.py \
+            --handle "${{ github.repository_owner }}" \
+            --github-user "${{ github.repository_owner }}" \
+            --output assets/svg/header.svg
+
+      - name: Generate divider variants
+        run: |
+          python scripts/build_divider.py --color cyan  --output assets/svg/divider-cyan.svg
+          python scripts/build_divider.py --color green --output assets/svg/divider-green.svg
+          python scripts/build_divider.py --color red   --output assets/svg/divider-red.svg
+
+      # If any generation step above fails (bad token, API down, rate
+      # limit) it exits non-zero and never touches its output file, so
+      # this step is simply never reached -- the job goes red as a
+      # visible signal, and every previously-committed SVG stays intact.
+      - name: Commit if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: refresh arcade header set"
+          file_pattern: >-
+            assets/svg/header.svg
+            assets/svg/divider-cyan.svg
+            assets/svg/divider-green.svg
+            assets/svg/divider-red.svg
