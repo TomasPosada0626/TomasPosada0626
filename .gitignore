@@ -1,3 +1,11 @@
 __pycache__/
 *.pyc
 *.tmp
+
+# Reference/guide material — never commit (photo, logos, video, PDFs)
+WhatsApp Image*.jpeg
+WhatsApp Video*.mp4
+*.pdf
+
+# Local WIP preview renders — not repo deliverables
+.preview/
