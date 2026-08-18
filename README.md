@@ -4,15 +4,13 @@
   <img src="assets/svg/banner-dark.svg" alt="Tomas Posada — animated developer profile banner" width="100%">
 </picture>
 
-<br>
-
 <!--
   STATS CARDS -- self-hosted github-readme-stats at
   github-readme-stats-one-roan-eif4bkrln2.vercel.app (verified 200 OK on
   both /api and /api/top-langs before this went in).
 -->
 <p align="center">
-  <img src="https://streak-stats.demolab.com/?user=TomasPosada0626&theme=dark&hide_border=true&background=0A101F&ring=10B981&fire=22D3EE&currStreakLabel=A78BFA&sideLabels=E7ECFB&sideNums=E7ECFB&dates=6B7280" width="60%" alt="GitHub streak stats">
+  <img src="https://streak-stats.demolab.com/?user=TomasPosada0626&theme=dark&hide_border=true&background=0A101F&ring=10B981&fire=22D3EE&currStreakLabel=A78BFA&sideLabels=E7ECFB&sideNums=E7ECFB&dates=6B7280" width="100%" alt="GitHub streak stats">
 </p>
 
 <p align="center">
