@@ -17,7 +17,7 @@
 
 <p align="center">
   <img src="https://github-readme-stats-one-roan-eif4bkrln2.vercel.app/api?username=TomasPosada0626&show_icons=true&hide_rank=true&count_private=true&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB&icon_color=10B981" width="49%" alt="Tomas' GitHub stats">
-  <img src="https://github-readme-stats-one-roan-eif4bkrln2.vercel.app/api/top-langs/?username=TomasPosada0626&layout=compact&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB" width="49%" alt="Most used languages">
+  <img src="https://github-readme-stats-one-roan-eif4bkrln2.vercel.app/api/top-langs/?username=TomasPosada0626&layout=compact&count_private=true&hide=jupyter%20notebook&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB" width="49%" alt="Most used languages">
 </p>
 
 <br>

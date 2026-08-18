@@ -170,7 +170,7 @@ def build_portrait_panel(dark_grid: np.ndarray):
         f'<rect x="{LEFT_X}" y="{frame_y}" width="{frame_w}" height="{frame_h}" rx="6" '
         f'fill="{PALETTE["bg"]}" stroke="{PALETTE["chrome"]}" stroke-opacity=".3" stroke-width="1.2"/>'
     )
-    dots = f'<path d="{path_d}" fill="{PALETTE["portrait"]}" shape-rendering="crispEdges"/>'
+    dots = f'<path d="{path_d}" fill="{PALETTE["portrait"]}"/>'
     return label + frame_border + dots, len(path_d)
 
 
@@ -234,7 +234,7 @@ def build_row(y_baseline: float, label: str, value: str):
             if cx > leader_end:
                 break
             parts.append(f"M{cx:.2f},{cy:.2f}h{size:.2f}v{size:.2f}h{-size:.2f}z")
-        leader_svg = f'<path d="{"".join(parts)}" fill="{PALETTE["chrome"]}" opacity=".3" shape-rendering="crispEdges"/>'
+        leader_svg = f'<path d="{"".join(parts)}" fill="{PALETTE["chrome"]}" opacity=".3"/>'
 
     return leader_svg + label_svg + value_svg
 

@@ -12,10 +12,18 @@ isolated dither dots (hair speckle, background grain) cost the same as
 drawing them individually would -- this never loses information, it just
 stops paying per-cell overhead for cells that happen to be adjacent.
 
-Emits square cells (not circles) because the panels use
-shape-rendering="crispEdges": a stroke-free square rasterizes to sharp
-pixels at small sizes, where a <circle> would just approximate a square
-anyway with extra path complexity.
+Emits square cells rather than circles for path simplicity (a <circle>
+needs an arc command, a square is two h/v lines). No shape-rendering
+hint is set: crispEdges was tried first (sharp squares at native size)
+but it disables antialiasing, and GitHub renders this banner scaled
+down from its native 1180px canvas to whatever width the README column
+actually is -- at that point a single dither grid row can land under
+one device pixel, and crispEdges rounds each row's coverage to fully
+on or fully off instead of blending it, which beats against the row
+frequency and shows up as banding/moire. Antialiasing acts as the
+low-pass filter a downscaled fine pattern needs; verified by rendering
+this banner at realistic GitHub column widths (~900px) with and
+without the hint before removing it.
 """
 
 from dither import GRID_W, GRID_H

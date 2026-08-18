@@ -95,7 +95,7 @@ def build_intro_layer(dark_grid: np.ndarray, groups: np.ndarray, box: dict, colo
         parts.append(
             f'<g opacity="0"><animate attributeName="opacity" from="0" to="1" '
             f'begin="{begin:.3f}s" dur="{INTRO_GROUP_FADE}s" fill="freeze"/>'
-            f'<path d="{d}" fill="{color}" shape-rendering="crispEdges"/></g>'
+            f'<path d="{d}" fill="{color}"/></g>'
         )
     return (
         f'<g><animate attributeName="opacity" from="1" to="0" '
@@ -134,7 +134,7 @@ def build_drift_loop_layer(dark_grid: np.ndarray, bands: np.ndarray, box: dict, 
             f'begin="{INTRO_DUR}s" dur="{LOOP_DUR}s" repeatCount="indefinite"/>'
             f'<animate attributeName="opacity" values="{opacity_values}" keyTimes="{key_times_str}" '
             f'begin="{INTRO_DUR}s" dur="{LOOP_DUR}s" repeatCount="indefinite"/>'
-            f'<path d="{d}" fill="{color}" shape-rendering="crispEdges"/>'
+            f'<path d="{d}" fill="{color}"/>'
             f'</g>'
         )
     return f'<g>{"".join(parts)}</g>'
@@ -158,7 +158,7 @@ def build_travellers_layer(box: dict, color: str) -> str:
     op_values = "0;0;1;1;0"
 
     return (
-        f'<path d="{d_react}" fill="{color}" shape-rendering="crispEdges" opacity="0">'
+        f'<path d="{d_react}" fill="{color}" opacity="0">'
         f'<animate attributeName="d" values="{d_values}" keyTimes="{d_key_times}" '
         f'begin="{INTRO_DUR}s" dur="{LOOP_DUR}s" repeatCount="indefinite"/>'
         f'<animate attributeName="opacity" values="{op_values}" keyTimes="{op_key_times}" '
