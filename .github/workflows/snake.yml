@@ -19,9 +19,15 @@ jobs:
         uses: Platane/snk/svg-only@v3
         with:
           github_user_name: TomasPosada0626
+          # NOTE: color values need a literal #, URL-encoded as %23 -- without
+          # it Platane/snk writes e.g. `--ce:2d3343` (no #) into the SVG's
+          # CSS, which is not a valid color, so `fill:var(--ce)` silently
+          # fails to invalid-at-computed-value and every cell renders as
+          # the SVG fill default (black) instead of the intended slate.
+          # Confirmed by rendering both ways and diffing actual pixel color.
           outputs: |
-            dist/snake-dark.svg?color_snake=10b981&color_dots=2d3343,0891b2,22d3ee,a78bfa,7c3aed
-            dist/snake-light.svg?color_snake=7c3aed&color_dots=ebedf0,0891b2,22d3ee,10b981,7c3aed
+            dist/snake-dark.svg?color_snake=%2310b981&color_dots=%232d3343,%230891b2,%2322d3ee,%23a78bfa,%237c3aed
+            dist/snake-light.svg?color_snake=%237c3aed&color_dots=%23ebedf0,%230891b2,%2322d3ee,%2310b981,%237c3aed
 
       - name: push grids to the output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
