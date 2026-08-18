@@ -89,24 +89,32 @@ def char_w(font_size: float) -> float:
     return font_size * 0.6
 
 
-ROWS = [
-    ("Subject", "Tomas Posada"),
-    ("Role", "Full-Stack Developer"),
-    ("Origin", "Medellín, Colombia"),
-    ("Education", "Ingeniería de Sistemas · EAFIT"),
-    ("Status", "Building + Learning + Shipping"),
-    ("ToolChain", "VS Code · Git · Docker · Claude Code"),
-    ("Core.Lang", "TypeScript · JavaScript · Python · Java · SQL"),
-    ("Core.Frontend", "React · Next.js · HTML · CSS"),
-    ("Core.Backend", "Node.js · Express · NestJS"),
-    ("Core.Database", "PostgreSQL · MongoDB"),
-    ("Core.Infra", "Docker · AWS · Linux · CI/CD"),
-    ("Grid.Mail", "tposadas1@eafit.edu.co"),
-    ("Grid.Portfolio", "coming soon"),
-    ("Grid.LinkedIn", "linkedin.com/in/tomasposadasuarez26"),
-    ("Grid.GitHub", "github.com/TomasPosada0626"),
-    ("Grid.Instagram", "instagram.com/tomas_posada26"),
+ROW_GROUPS = [
+    (None, [
+        ("Subject", "Tomas Posada"),
+        ("Role", "Full-Stack Developer"),
+        ("Origin", "Medellín, Colombia"),
+        ("Education", "Ingeniería de Sistemas · EAFIT"),
+        ("Status", "Building + Learning + Shipping"),
+        ("ToolChain", "VS Code · Git · Docker · Claude Code"),
+    ]),
+    (None, [
+        ("Core.Lang", "TypeScript · JavaScript · Python · Java · SQL"),
+        ("Core.Frontend", "React · Next.js · HTML · CSS"),
+        ("Core.Backend", "Node.js · Express · NestJS"),
+        ("Core.Database", "PostgreSQL · MongoDB"),
+        ("Core.Infra", "Docker · AWS · Linux · CI/CD"),
+    ]),
+    ("Contact", [
+        ("Grid.Mail", "tposadas1@eafit.edu.co"),
+        ("Grid.Portfolio", "coming soon"),
+        ("Grid.LinkedIn", "linkedin.com/in/tomasposadasuarez26"),
+        ("Grid.GitHub", "github.com/TomasPosada0626"),
+        ("Grid.Instagram", "instagram.com/tomas_posada26"),
+    ]),
 ]
+GROUP_GAP = 14       # extra vertical space before a new group, on top of one normal ROW_SPACING
+DIVIDER_HEIGHT = 20  # vertical space a "- Label ...." divider row occupies
 
 
 def build_titlebar():
@@ -239,10 +247,43 @@ def build_row(y_baseline: float, label: str, value: str):
     return leader_svg + label_svg + value_svg
 
 
+def build_divider(y_baseline: float, label: str):
+    """A group separator styled like a row that never got a value: '-
+    Label' on the left, a dotted leader running all the way to the
+    right edge, both dimmer than a real row so it reads as structure,
+    not content."""
+    label_x = RIGHT_X + 4
+    right_edge = RIGHT_X + RIGHT_W - 4
+    text = f"- {label}"
+    lw = len(text) * char_w(HEADER_FONT)
+    label_svg = (
+        f'<text x="{label_x:.1f}" y="{y_baseline:.1f}" font-size="{HEADER_FONT}" font-family="{FONT}" '
+        f'fill="{PALETTE["chrome"]}" opacity=".55" textLength="{lw:.1f}" lengthAdjust="spacingAndGlyphs">'
+        f'{escape(text)}</text>'
+    )
+    leader_start = label_x + lw + 6
+    pitch, size = 6.0, 1.6
+    cy = y_baseline - HEADER_FONT * 0.32
+    n = max(0, int((right_edge - leader_start) // pitch) + 1)
+    parts = [f"M{leader_start + i * pitch:.2f},{cy:.2f}h{size:.2f}v{size:.2f}h{-size:.2f}z" for i in range(n)]
+    leader_svg = f'<path d="{"".join(parts)}" fill="{PALETTE["chrome"]}" opacity=".2"/>'
+    return leader_svg + label_svg
+
+
+def _group_rows_height(n_rows: int) -> float:
+    return (n_rows - 1) * ROW_SPACING if n_rows > 1 else 0.0
+
+
 def build_info_panel():
     header_content_h = 90
-    rows_h = len(ROWS) * ROW_SPACING
-    content_h = header_content_h + rows_h
+
+    content_h = header_content_h
+    for i, (divider_label, rows) in enumerate(ROW_GROUPS):
+        if i > 0:
+            content_h += GROUP_GAP
+        if divider_label:
+            content_h += DIVIDER_HEIGHT
+        content_h += ROW_SPACING + _group_rows_height(len(rows))
     top_offset = PANEL_Y + (PANEL_H - content_h) / 2
 
     header_y = top_offset + 14
@@ -255,13 +296,19 @@ def build_info_panel():
     pill_center_y = header_y + 26
     pill = build_handle_pill(RIGHT_X + 4, pill_center_y, "@TomasPosada0626")
 
-    rows_start_y = pill_center_y + 30
-    rows_svg = "".join(
-        build_row(rows_start_y + i * ROW_SPACING, label, value)
-        for i, (label, value) in enumerate(ROWS)
-    )
+    y = pill_center_y + 30
+    parts = []
+    for i, (divider_label, rows) in enumerate(ROW_GROUPS):
+        if i > 0:
+            y += GROUP_GAP
+        if divider_label:
+            parts.append(build_divider(y, divider_label))
+            y += DIVIDER_HEIGHT
+        for label, value in rows:
+            parts.append(build_row(y, label, value))
+            y += ROW_SPACING
 
-    return header + live + pill + rows_svg
+    return header + live + pill + "".join(parts)
 
 
 def build_svg(dark_grid: np.ndarray):
