@@ -27,22 +27,36 @@ const THEMES = {
     title: "#E7ECFB", desc: "#9AA4C0", chrome: "#22D3EE",
     accent: "#10B981", tagBg: "#A78BFA26", tagText: "#A78BFA",
     ring_track: "#1E2740",
+    // rank palette: 1st/2nd/3rd language by share, NOT tied to which
+    // language it actually is -- every card cycles the same three
+    // profile-palette hues so the grid reads as one cohesive system
+    // instead of a scatter of each language's own (clashing) brand
+    // colour. Matches the reference profile's card style.
+    rank: ["#A78BFA", "#22D3EE", "#10B981"],
   },
   light: {
     bg: "#FFFFFF", card: "#F3F1FC", border: "#0891B233",
     title: "#1E2433", desc: "#5B6478", chrome: "#0891B2",
     accent: "#10B981", tagBg: "#7C3AED26", tagText: "#7C3AED",
     ring_track: "#E2E6F0",
+    rank: ["#7C3AED", "#0891B2", "#10B981"],
   },
 };
 
-// A short lookup for the languages actually likely to show up here;
-// unlisted languages fall back to the theme accent rather than guessing.
-const LANG_COLORS = {
-  TypeScript: "#3178C6", JavaScript: "#F1E05A", Python: "#3572A5",
-  HTML: "#E34C26", CSS: "#563D7C", Java: "#B07219", SQL: "#E38C00",
-  Vue: "#41B883", "Jupyter Notebook": "#DA5B0B", PLpgSQL: "#336790",
+// Small original line-icon glyphs, one per featured repo, hand-drawn to
+// loosely evoke what each project actually does (no real per-repo logo
+// assets exist to source from). Authored in a local 0-28 box; drawn via
+// a <g transform="translate(20,16)"> wrapper so card position doesn't
+// leak into the path data. Falls back to a generic </> glyph.
+const ICONS = {
+  cucu: { color: "#A78BFA", d: "M10,9 L5,14 L10,19 M18,9 L23,14 L18,19 M15,7 L13,21" },
+  amparo: { color: "#22D3EE", d: "M14,5 L14,23 M14,5 L21,8 M14,5 L7,8 M7,8 L4,15 A5,4 0 0,0 10,15 Z M21,8 L18,15 A5,4 0 0,0 24,15 Z M9,23 L19,23" },
+  opera: { color: "#10B981", d: "M6,20 A9,9 0 0,1 22,20 M14,20 L18,13 M14,20 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" },
+  prodexa: { color: "#A78BFA", d: "M6,22 L6,13 L11,9 L11,13 L16,9 L16,13 L22,9 L22,22 Z M9,22 L9,17 L13,17 L13,22" },
+  epsilon: { color: "#22D3EE", d: "M4,15 L9,15 L11,8 L15,21 L18,11 L20,15 L24,15" },
+  neuroroutine: { color: "#10B981", d: "M6,9 h3 M11,9 h11 M6,14 h3 M11,14 h11 M6,19 h3 M11,19 h11" },
 };
+const DEFAULT_ICON = { color: "#8892B0", d: "M10,9 L5,14 L10,19 M18,9 L23,14 L18,19 M15,7 L13,21" };
 
 async function fetchJSON(url, token) {
   const headers = { "User-Agent": "project-cards", Accept: "application/vnd.github+json" };
@@ -95,17 +109,18 @@ function wrap(text, maxChars, maxLines) {
   return lines;
 }
 
-function donut(cx, cy, r, allLangs, track) {
+function donut(cx, cy, r, allLangs, track, rankColors) {
   // One arc segment per language, each sized to its own share and
-  // coloured to match its legend dot -- not just a single-language
-  // ring with everything else left as bare track.
+  // coloured by RANK (1st/2nd/3rd, cycling rankColors) rather than by
+  // which language it actually is -- keeps every card on the same
+  // three-hue system regardless of what it's written in.
   const stroke = 5;
   const circumference = 2 * Math.PI * r;
   const gapDeg = allLangs.length > 1 ? 2.2 : 0; // small visual gap between segments
   let cum = 0;
   const segments = allLangs
-    .map(({ lang, pct }) => {
-      const color = LANG_COLORS[lang] || "#8892B0";
+    .map(({ pct }, i) => {
+      const color = rankColors[i % rankColors.length];
       const segFraction = Math.max(0, pct / 100 - gapDeg / 360);
       const dash = segFraction * circumference;
       const offset = -(cum / 100) * circumference;
@@ -115,7 +130,7 @@ function donut(cx, cy, r, allLangs, track) {
         stroke-dashoffset="${offset.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`;
     })
     .join("");
-  const topColor = LANG_COLORS[allLangs[0]?.lang] || "#8892B0";
+  const topColor = rankColors[0];
   const topPct = allLangs[0]?.pct || 0;
   return `
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${track}" stroke-width="${stroke}"/>
@@ -141,14 +156,13 @@ async function buildCard(repoFull, x, y, theme, token) {
   const descLines = wrap(details.description || "No description yet.", 40, 2);
   const tags = (details.topics || []).slice(0, 3);
 
-  const iconColor = LANG_COLORS[langs[0]?.lang] || theme.accent;
-  const initial = name.replace(/[^A-Za-z0-9]/g, "")[0]?.toUpperCase() || "?";
+  const icon = ICONS[name.toLowerCase()] || DEFAULT_ICON;
 
   let svg = `<g transform="translate(${x},${y})">`;
   svg += `<rect width="${CARD_W}" height="${CARD_H}" rx="10" fill="${theme.card}" stroke="${theme.border}" stroke-width="1.2"/>`;
 
-  svg += `<rect x="20" y="16" width="28" height="28" rx="7" fill="${iconColor}22" stroke="${iconColor}" stroke-width="1.2"/>`;
-  svg += `<text x="34" y="35" text-anchor="middle" font-size="13" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${iconColor}">${esc(initial)}</text>`;
+  svg += `<rect x="20" y="16" width="28" height="28" rx="7" fill="${icon.color}22" stroke="${icon.color}" stroke-width="1.2"/>`;
+  svg += `<g transform="translate(20,16)"><path d="${icon.d}" fill="none" stroke="${icon.color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>`;
   svg += `<text x="58" y="30" font-size="15" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${esc(truncate(name, 22))}</text>`;
   svg += `<text x="58" y="46" font-size="10.5" letter-spacing=".04em" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}" opacity=".7">${esc(owner)}/${esc(name)}</text>`;
 
@@ -160,7 +174,7 @@ async function buildCard(repoFull, x, y, theme, token) {
   langs.forEach((l, i) => {
     const lx = 24 + (i % 2) * 150;
     const ly = ty + Math.floor(i / 2) * 18;
-    const color = LANG_COLORS[l.lang] || theme.accent;
+    const color = theme.rank[i % theme.rank.length];
     svg += `<circle cx="${lx}" cy="${ly - 4}" r="3.5" fill="${color}"/>`;
     svg += `<text x="${lx + 10}" y="${ly}" font-size="11" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(l.lang)} ${l.pct.toFixed(0)}%</text>`;
   });
@@ -176,7 +190,7 @@ async function buildCard(repoFull, x, y, theme, token) {
 
   svg += `<text x="24" y="${CARD_H - 14}" font-size="10.5" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">★ ${details.stargazers_count}  ·  updated ${relativeTime(details.pushed_at)}</text>`;
 
-  svg += donut(CARD_W - 46, 46, 26, allLangs, theme.ring_track);
+  svg += donut(CARD_W - 46, 46, 26, allLangs, theme.ring_track, theme.rank);
   svg += `</g>`;
   return svg;
 }
