@@ -1,0 +1,9 @@
+{
+  "name": "project-cards",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Self-hosted, live-updating pinned-projects SVG card grid for the GitHub profile README.",
+  "engines": {
+    "node": ">=18"
+  }
+}

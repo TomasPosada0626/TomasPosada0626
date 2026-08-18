@@ -33,6 +33,22 @@
   <img src="https://raw.githubusercontent.com/TomasPosada0626/TomasPosada0626/output/snake-dark.svg" alt="Contribution snake" width="100%">
 </picture>
 
+<br>
+
+<!--
+  PROJECTS -- self-hosted card grid (services/project-cards), same
+  pattern as the stats block: generated live on every view, ordered by
+  most-recently-pushed. Replace YOUR-PROJECTS-INSTANCE once deployed
+  (see services/project-cards/README.md).
+-->
+<p align="center"><b>PROJECTS.LIST</b> &nbsp;<code>./projects.sh --all</code></p>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://YOUR-PROJECTS-INSTANCE.vercel.app/api?repos=TomasPosada0626/cucu,TomasPosada0626/opera,TomasPosada0626/Prodexa,TomasPosada0626/epsilon,TomasPosada0626/Neuroroutine&theme=dark">
+  <source media="(prefers-color-scheme: light)" srcset="https://YOUR-PROJECTS-INSTANCE.vercel.app/api?repos=TomasPosada0626/cucu,TomasPosada0626/opera,TomasPosada0626/Prodexa,TomasPosada0626/epsilon,TomasPosada0626/Neuroroutine&theme=light">
+  <img src="https://YOUR-PROJECTS-INSTANCE.vercel.app/api?repos=TomasPosada0626/cucu,TomasPosada0626/opera,TomasPosada0626/Prodexa,TomasPosada0626/epsilon,TomasPosada0626/Neuroroutine&theme=dark" alt="Featured projects" width="100%">
+</picture>
+
 <br><br>
 
 <p align="center">
