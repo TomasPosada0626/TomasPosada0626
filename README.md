@@ -42,9 +42,9 @@
 <sub><b>PROJECTS.LIST</b> &nbsp;<code>./projects.sh --all</code></sub>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=dark&v=2">
-  <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=light&v=2">
-  <img src="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=dark&v=2" alt="Featured projects" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=dark&v=3">
+  <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=light&v=3">
+  <img src="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=dark&v=3" alt="Featured projects" width="100%">
 </picture>
 
 <br><br>
