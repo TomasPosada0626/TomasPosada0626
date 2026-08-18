@@ -25,13 +25,13 @@ const THEMES = {
   dark: {
     bg: "#0A101F", card: "#0D1526", border: "#22D3EE33",
     title: "#E7ECFB", desc: "#9AA4C0", chrome: "#22D3EE",
-    accent: "#10B981", tagBg: "#22D3EE22", tagText: "#22D3EE",
+    accent: "#10B981", tagBg: "#A78BFA26", tagText: "#A78BFA",
     ring_track: "#1E2740",
   },
   light: {
     bg: "#FFFFFF", card: "#F3F1FC", border: "#0891B233",
     title: "#1E2433", desc: "#5B6478", chrome: "#0891B2",
-    accent: "#10B981", tagBg: "#0891B222", tagText: "#0891B2",
+    accent: "#10B981", tagBg: "#7C3AED26", tagText: "#7C3AED",
     ring_track: "#E2E6F0",
   },
 };

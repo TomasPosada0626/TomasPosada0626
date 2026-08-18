@@ -28,9 +28,9 @@
   `output` branch). See the checklist at the bottom.
 -->
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/TomasPosada0626/TomasPosada0626/output/snake-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/TomasPosada0626/TomasPosada0626/output/snake-light.svg">
-  <img src="https://raw.githubusercontent.com/TomasPosada0626/TomasPosada0626/output/snake-dark.svg" alt="Contribution snake" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/TomasPosada0626/TomasPosada0626/output/snake-dark.svg?v=2">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/TomasPosada0626/TomasPosada0626/output/snake-light.svg?v=2">
+  <img src="https://raw.githubusercontent.com/TomasPosada0626/TomasPosada0626/output/snake-dark.svg?v=2" alt="Contribution snake" width="100%">
 </picture>
 
 <br>
@@ -41,7 +41,7 @@
   most-recently-pushed. Replace YOUR-PROJECTS-INSTANCE once deployed
   (see services/project-cards/README.md).
 -->
-<p align="center"><b>PROJECTS.LIST</b> &nbsp;<code>./projects.sh --all</code></p>
+<sub><b>PROJECTS.LIST</b> &nbsp;<code>./projects.sh --all</code></sub>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=dark">
