@@ -95,17 +95,33 @@ function wrap(text, maxChars, maxLines) {
   return lines;
 }
 
-function donut(cx, cy, r, pct, color, track) {
+function donut(cx, cy, r, allLangs, track) {
+  // One arc segment per language, each sized to its own share and
+  // coloured to match its legend dot -- not just a single-language
+  // ring with everything else left as bare track.
   const stroke = 5;
   const circumference = 2 * Math.PI * r;
-  const dash = (pct / 100) * circumference;
+  const gapDeg = allLangs.length > 1 ? 2.2 : 0; // small visual gap between segments
+  let cum = 0;
+  const segments = allLangs
+    .map(({ lang, pct }) => {
+      const color = LANG_COLORS[lang] || "#8892B0";
+      const segFraction = Math.max(0, pct / 100 - gapDeg / 360);
+      const dash = segFraction * circumference;
+      const offset = -(cum / 100) * circumference;
+      cum += pct;
+      return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+        stroke-linecap="round" stroke-dasharray="${dash.toFixed(1)} ${circumference.toFixed(1)}"
+        stroke-dashoffset="${offset.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    })
+    .join("");
+  const topColor = LANG_COLORS[allLangs[0]?.lang] || "#8892B0";
+  const topPct = allLangs[0]?.pct || 0;
   return `
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${track}" stroke-width="${stroke}"/>
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
-      stroke-linecap="round" stroke-dasharray="${dash.toFixed(1)} ${circumference.toFixed(1)}"
-      transform="rotate(-90 ${cx} ${cy})"/>
+    ${segments}
     <text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="15" font-weight="700"
-      font-family="ui-monospace,Consolas,monospace" fill="${color}">${Math.round(pct)}%</text>
+      font-family="ui-monospace,Consolas,monospace" fill="${topColor}">${Math.round(topPct)}%</text>
   `;
 }
 
@@ -117,12 +133,10 @@ async function buildCard(repoFull, x, y, theme, token) {
   ]);
 
   const totalBytes = Object.values(langBytes).reduce((a, b) => a + b, 0) || 1;
-  const langs = Object.entries(langBytes)
+  const allLangs = Object.entries(langBytes)
     .map(([lang, bytes]) => ({ lang, pct: (bytes / totalBytes) * 100 }))
-    .sort((a, b) => b.pct - a.pct)
-    .slice(0, 3);
-  const topLang = langs[0] || { lang: details.language || "Code", pct: 100 };
-  const topColor = LANG_COLORS[topLang.lang] || theme.accent;
+    .sort((a, b) => b.pct - a.pct);
+  const langs = allLangs.slice(0, 3); // legend only shows the top few; the ring below uses all of them
 
   const descLines = wrap(details.description || "No description yet.", 40, 2);
   const tags = (details.topics || []).slice(0, 3);
@@ -158,7 +172,7 @@ async function buildCard(repoFull, x, y, theme, token) {
 
   svg += `<text x="24" y="${CARD_H - 14}" font-size="10.5" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">★ ${details.stargazers_count}  ·  updated ${relativeTime(details.pushed_at)}</text>`;
 
-  svg += donut(CARD_W - 46, 46, 26, topLang.pct, topColor, theme.ring_track);
+  svg += donut(CARD_W - 46, 46, 26, allLangs, theme.ring_track);
   svg += `</g>`;
   return svg;
 }
