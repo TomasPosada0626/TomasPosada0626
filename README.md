@@ -10,12 +10,12 @@
   both /api and /api/top-langs before this went in).
 -->
 <p align="center">
-  <img src="https://streak-stats.demolab.com/?user=TomasPosada0626&theme=dark&hide_border=true&background=0A101F&ring=10B981&fire=22D3EE&currStreakLabel=A78BFA&sideLabels=E7ECFB&sideNums=E7ECFB&dates=6B7280" width="100%" alt="GitHub streak stats">
+  <img src="https://streak-stats.demolab.com/?user=TomasPosada0626&theme=dark&hide_border=true&background=0A101F&ring=10B981&fire=22D3EE&currStreakLabel=A78BFA&sideLabels=E7ECFB&sideNums=E7ECFB&dates=6B7280&card_width=1180" width="100%" alt="GitHub streak stats">
 </p>
 
 <p align="center">
-  <img src="https://github-readme-stats-one-roan-eif4bkrln2.vercel.app/api?username=TomasPosada0626&show_icons=true&hide_rank=true&count_private=true&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB&icon_color=10B981" width="49%" alt="Tomas' GitHub stats">
-  <img src="https://github-readme-stats-one-roan-eif4bkrln2.vercel.app/api/top-langs/?username=TomasPosada0626&layout=compact&count_private=true&hide=jupyter%20notebook&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB" width="49%" alt="Most used languages">
+  <img src="https://github-readme-stats-one-roan-eif4bkrln2.vercel.app/api?username=TomasPosada0626&show_icons=true&hide_rank=true&count_private=true&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB&icon_color=10B981&card_width=500" width="49%" alt="Tomas' GitHub stats">
+  <img src="https://github-readme-stats-one-roan-eif4bkrln2.vercel.app/api/top-langs/?username=TomasPosada0626&layout=compact&count_private=true&hide=jupyter%20notebook&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB&card_width=500" width="49%" alt="Most used languages">
 </p>
 
 <br>

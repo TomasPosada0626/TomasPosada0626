@@ -28,7 +28,9 @@ module can be unit-tested / re-run standalone against a crop candidate.
 import numpy as np
 from scipy import ndimage
 
-GRID_W, GRID_H = 300, 340
+GRID_W, GRID_H = 300, 340  # calibrated in the original research: ~17k dots is the point where
+# more density starts reintroducing moire banding at GitHub's realistic README display width,
+# even without shape-rendering=crispEdges -- confirmed by re-testing the 1.5x attempt at 430px
 
 
 def dither_serpentine(gray: np.ndarray, invert: bool) -> np.ndarray:

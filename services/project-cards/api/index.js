@@ -16,7 +16,7 @@
 // and "works reliably."
 
 const CARD_W = 380;
-const CARD_H = 190;
+const CARD_H = 172;
 const GAP = 18;
 const COLS = 2;
 const PAD = 4;
@@ -141,18 +141,22 @@ async function buildCard(repoFull, x, y, theme, token) {
   const descLines = wrap(details.description || "No description yet.", 40, 2);
   const tags = (details.topics || []).slice(0, 3);
 
+  const iconColor = LANG_COLORS[langs[0]?.lang] || theme.accent;
+  const initial = name.replace(/[^A-Za-z0-9]/g, "")[0]?.toUpperCase() || "?";
+
   let svg = `<g transform="translate(${x},${y})">`;
   svg += `<rect width="${CARD_W}" height="${CARD_H}" rx="10" fill="${theme.card}" stroke="${theme.border}" stroke-width="1.2"/>`;
 
-  svg += `<circle cx="24" cy="26" r="4" fill="${theme.accent}"/>`;
-  svg += `<text x="36" y="31" font-size="15" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${esc(truncate(name, 24))}</text>`;
-  svg += `<text x="24" y="48" font-size="10.5" letter-spacing=".04em" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}" opacity=".7">${esc(owner)}/${esc(name)}</text>`;
+  svg += `<rect x="20" y="16" width="28" height="28" rx="7" fill="${iconColor}22" stroke="${iconColor}" stroke-width="1.2"/>`;
+  svg += `<text x="34" y="35" text-anchor="middle" font-size="13" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${iconColor}">${esc(initial)}</text>`;
+  svg += `<text x="58" y="30" font-size="15" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${esc(truncate(name, 22))}</text>`;
+  svg += `<text x="58" y="46" font-size="10.5" letter-spacing=".04em" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}" opacity=".7">${esc(owner)}/${esc(name)}</text>`;
 
   descLines.forEach((line, i) => {
-    svg += `<text x="24" y="${68 + i * 16}" font-size="12" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(line)}</text>`;
+    svg += `<text x="24" y="${66 + i * 14}" font-size="12" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(line)}</text>`;
   });
 
-  let ty = 106;
+  let ty = 96;
   langs.forEach((l, i) => {
     const lx = 24 + (i % 2) * 150;
     const ly = ty + Math.floor(i / 2) * 18;
