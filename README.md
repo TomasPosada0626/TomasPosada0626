@@ -5,17 +5,23 @@
 </picture>
 
 <!--
-  STATS CARDS -- self-hosted github-readme-stats at
-  github-readme-stats-one-roan-eif4bkrln2.vercel.app (verified 200 OK on
-  both /api and /api/top-langs before this went in).
+  STREAK STATS -- using the PUBLIC streak-stats.demolab.com, not the
+  self-hosted github-readme-streak-stats-livid-xi.vercel.app instance:
+  that Vercel deployment 404s intermittently (same domain-instability
+  pattern hit on the other self-hosted service), so the public instance
+  is the more reliable choice here even though it's shared. Re-point at
+  the self-hosted one if it proves stable later.
+
+  The stats + top-langs cards (self-hosted github-readme-stats) were
+  here too but kept 404ing on a Vercel domain that wouldn't stay put
+  even after redeploys -- pulled for now rather than ship something
+  broken. Re-add by restoring these two lines once that instance is
+  stable again:
+    <img src="https://YOUR-INSTANCE.vercel.app/api?username=TomasPosada0626&show_icons=true&hide_rank=true&count_private=true&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB&icon_color=10B981&card_width=500" width="49%" alt="Tomas' GitHub stats">
+    <img src="https://YOUR-INSTANCE.vercel.app/api/top-langs/?username=TomasPosada0626&layout=compact&count_private=true&hide=jupyter%20notebook&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB&card_width=500" width="49%" alt="Most used languages">
 -->
 <p align="center">
   <img src="https://streak-stats.demolab.com/?user=TomasPosada0626&theme=dark&hide_border=true&background=0A101F&ring=10B981&fire=22D3EE&currStreakLabel=A78BFA&sideLabels=E7ECFB&sideNums=E7ECFB&dates=6B7280&card_width=1180" width="100%" alt="GitHub streak stats">
-</p>
-
-<p align="center">
-  <img src="https://github-readme-stats-one-roan-eif4bkrln2.vercel.app/api?username=TomasPosada0626&show_icons=true&hide_rank=true&count_private=true&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB&icon_color=10B981&card_width=500" width="49%" alt="Tomas' GitHub stats">
-  <img src="https://github-readme-stats-one-roan-eif4bkrln2.vercel.app/api/top-langs/?username=TomasPosada0626&layout=compact&count_private=true&hide=jupyter%20notebook&hide_border=true&bg_color=0A101F&title_color=22D3EE&text_color=E7ECFB&card_width=500" width="49%" alt="Most used languages">
 </p>
 
 <br>
