@@ -43,20 +43,46 @@ const THEMES = {
   },
 };
 
-// Small original line-icon glyphs, one per featured repo, hand-drawn to
-// loosely evoke what each project actually does (no real per-repo logo
-// assets exist to source from). Authored in a local 0-28 box; drawn via
-// a <g transform="translate(20,16)"> wrapper so card position doesn't
-// leak into the path data. Falls back to a generic </> glyph.
-const ICONS = {
-  cucu: { color: "#A78BFA", d: "M10,9 L5,14 L10,19 M18,9 L23,14 L18,19 M15,7 L13,21" },
-  amparo: { color: "#22D3EE", d: "M14,5 L14,23 M14,5 L21,8 M14,5 L7,8 M7,8 L4,15 A5,4 0 0,0 10,15 Z M21,8 L18,15 A5,4 0 0,0 24,15 Z M9,23 L19,23" },
-  opera: { color: "#10B981", d: "M6,20 A9,9 0 0,1 22,20 M14,20 L18,13 M14,20 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" },
-  prodexa: { color: "#A78BFA", d: "M6,22 L6,13 L11,9 L11,13 L16,9 L16,13 L22,9 L22,22 Z M9,22 L9,17 L13,17 L13,22" },
-  epsilon: { color: "#22D3EE", d: "M4,15 L9,15 L11,8 L15,21 L18,11 L20,15 L24,15" },
-  neuroroutine: { color: "#10B981", d: "M6,9 h3 M11,9 h11 M6,14 h3 M11,14 h11 M6,19 h3 M11,19 h11" },
+// Icons keyed to each repo's actual dominant language rather than a
+// hand-drawn metaphor for what the project does -- only two real
+// languages show up as the top slot across these six repos, so this
+// only needs two real logo renders plus a generic fallback.
+const ICON_TS = {
+  type: "ts", color: "#3178C6",
 };
-const DEFAULT_ICON = { color: "#8892B0", d: "M10,9 L5,14 L10,19 M18,9 L23,14 L18,19 M15,7 L13,21" };
+const ICON_PY = {
+  // simplified two-tone recreation of the Python mark: two interlocked
+  // rounded bodies (blue on top, yellow on bottom) each with an "eye".
+  type: "py", colorTop: "#3776AB", colorBottom: "#FFD43B",
+  dTop: "M14,3 C10,3 8,4.5 8,7 L8,11 L16,11 L16,12.5 L6.5,12.5 C4.5,12.5 3,14.5 3,17.5 C3,20.5 4.5,22 6.5,22 L9,22 L9,19 C9,16.5 10.5,15 13,15 L18,15 C20.5,15 22,13.3 22,11 L22,7 C22,4.5 19,3 14,3 Z",
+  dBottom: "M14,25 C18,25 20,23.5 20,21 L20,17 L12,17 L12,15.5 L21.5,15.5 C23.5,15.5 25,13.5 25,10.5 C25,7.5 23.5,6 21.5,6 L19,6 L19,9 C19,11.5 17.5,13 15,13 L10,13 C7.5,13 6,14.7 6,17 L6,21 C6,23.5 9,25 14,25 Z",
+  eyeTop: [11, 6.3], eyeBottom: [17, 21.7],
+};
+const DEFAULT_ICON = { type: "path", color: "#8892B0", d: "M10,9 L5,14 L10,19 M18,9 L23,14 L18,19 M15,7 L13,21" };
+
+const ICONS = {
+  cucu: ICON_PY,
+  amparo: ICON_PY,
+  opera: ICON_TS,
+  prodexa: ICON_TS,
+  epsilon: ICON_PY,
+  neuroroutine: ICON_TS,
+};
+
+function iconMarkup(icon) {
+  if (icon.type === "ts") {
+    return `<text x="14" y="19" text-anchor="middle" font-size="12" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${icon.color}">TS</text>`;
+  }
+  if (icon.type === "py") {
+    return (
+      `<path d="${icon.dTop}" fill="${icon.colorTop}"/>` +
+      `<path d="${icon.dBottom}" fill="${icon.colorBottom}"/>` +
+      `<circle cx="${icon.eyeTop[0]}" cy="${icon.eyeTop[1]}" r="0.9" fill="#0A101F"/>` +
+      `<circle cx="${icon.eyeBottom[0]}" cy="${icon.eyeBottom[1]}" r="0.9" fill="#0A101F"/>`
+    );
+  }
+  return `<path d="${icon.d}" fill="none" stroke="${icon.color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
 
 async function fetchJSON(url, token) {
   const headers = { "User-Agent": "project-cards", Accept: "application/vnd.github+json" };
@@ -159,8 +185,9 @@ async function buildCard(repoFull, x, y, theme, token) {
   let svg = `<g transform="translate(${x},${y})">`;
   svg += `<rect width="${CARD_W}" height="${CARD_H}" rx="10" fill="${theme.card}" stroke="${theme.border}" stroke-width="1.2"/>`;
 
-  svg += `<rect x="20" y="16" width="28" height="28" rx="7" fill="${icon.color}22" stroke="${icon.color}" stroke-width="1.2"/>`;
-  svg += `<g transform="translate(20,16)"><path d="${icon.d}" fill="none" stroke="${icon.color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+  const iconBorder = icon.color || icon.colorTop;
+  svg += `<rect x="20" y="16" width="28" height="28" rx="7" fill="${iconBorder}22" stroke="${iconBorder}" stroke-width="1.2"/>`;
+  svg += `<g transform="translate(20,16)">${iconMarkup(icon)}</g>`;
   svg += `<text x="58" y="30" font-size="15" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${esc(truncate(name, 22))}</text>`;
   svg += `<text x="58" y="46" font-size="10.5" letter-spacing=".04em" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}" opacity=".7">${esc(owner)}/${esc(name)}</text>`;
 
