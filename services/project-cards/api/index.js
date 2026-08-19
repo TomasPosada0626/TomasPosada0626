@@ -58,11 +58,18 @@ const ICON_PY = {
   dBottom: "M14,25 C18,25 20,23.5 20,21 L20,17 L12,17 L12,15.5 L21.5,15.5 C23.5,15.5 25,13.5 25,10.5 C25,7.5 23.5,6 21.5,6 L19,6 L19,9 C19,11.5 17.5,13 15,13 L10,13 C7.5,13 6,14.7 6,17 L6,21 C6,23.5 9,25 14,25 Z",
   eyeTop: [11, 6.3], eyeBottom: [17, 21.7],
 };
+const ICON_JUPYTER = {
+  // simplified recreation of the Jupyter mark: a small core "planet"
+  // with three elliptical orbits at 60deg apart, each carrying one
+  // "moon" -- same idea as the real logo, without tracing its exact
+  // (non-simple) bezier outlines.
+  type: "jupyter", color: "#F37626",
+};
 const DEFAULT_ICON = { type: "path", color: "#8892B0", d: "M10,9 L5,14 L10,19 M18,9 L23,14 L18,19 M15,7 L13,21" };
 
 const ICONS = {
   cucu: ICON_PY,
-  amparo: ICON_PY,
+  amparo: ICON_JUPYTER,
   opera: ICON_TS,
   prodexa: ICON_TS,
   epsilon: ICON_PY,
@@ -80,6 +87,17 @@ function iconMarkup(icon) {
       `<circle cx="${icon.eyeTop[0]}" cy="${icon.eyeTop[1]}" r="0.9" fill="#0A101F"/>` +
       `<circle cx="${icon.eyeBottom[0]}" cy="${icon.eyeBottom[1]}" r="0.9" fill="#0A101F"/>`
     );
+  }
+  if (icon.type === "jupyter") {
+    const orbits = [0, 60, 120]
+      .map((deg) => {
+        return `<g transform="rotate(${deg} 14 14)">
+          <ellipse cx="14" cy="14" rx="11" ry="4" fill="none" stroke="${icon.color}" stroke-width="1.1" opacity=".85"/>
+          <circle cx="24.5" cy="14" r="1.8" fill="${icon.color}"/>
+        </g>`;
+      })
+      .join("");
+    return `${orbits}<circle cx="14" cy="14" r="2.6" fill="${icon.color}"/>`;
   }
   return `<path d="${icon.d}" fill="none" stroke="${icon.color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
 }
