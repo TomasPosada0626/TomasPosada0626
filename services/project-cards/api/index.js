@@ -212,25 +212,34 @@ async function buildCard(repoFull, x, y, theme, token) {
   // Every block sits at a FIXED y, the same in all six cards, rather
   // than flowing from wherever the previous block happened to end --
   // that's what makes the grid read as aligned instead of each card
-  // drifting to its own rhythm. The one thing that has to be capped to
-  // make fixed slots safe is the language legend: it's the only
-  // variable-height block (1 row for <=2 languages, 2 rows for 3+),
-  // and a 2-row legend plus a full tag row was overflowing into the
-  // footer on repos with 3+ languages (e.g. Prodexa) -- so the legend
-  // always shows at most the top 2 (the ring below still reflects all
-  // of them, this is just the text legend).
-  const legendLangs = allLangs.slice(0, 2);
+  // drifting to its own rhythm. The legend row still has to stay a
+  // single fixed-height row (a 2nd row was overflowing into the tag
+  // row on repos with 3+ languages), so instead of a fixed 2-language
+  // cap that silently hid real languages, it packs as many as fit by
+  // *measured* text width -- capped at 3 for guaranteed single-row
+  // safety even in the extreme case -- and appends "+N" for whatever's
+  // left, so a repo's actual full language count is never hidden
+  // without a trace. The donut ring already reflected 100% of it; this
+  // just makes the text legend stop quietly truncating at "top 2."
   descLines.forEach((line, i) => {
     svg += `<text x="24" y="${66 + i * 14}" font-size="12" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(line)}</text>`;
   });
 
   const langY = 100;
-  legendLangs.forEach((l, i) => {
-    const lx = 24 + i * 150;
+  const CHAR_W = 5.6;
+  const shownLangs = allLangs.slice(0, 3);
+  let lx = 24;
+  shownLangs.forEach((l, i) => {
+    const label = `${l.lang} ${l.pct.toFixed(0)}%`;
     const color = theme.rank[i % theme.rank.length];
     svg += `<circle cx="${lx}" cy="${langY - 4}" r="3.5" fill="${color}"/>`;
-    svg += `<text x="${lx + 10}" y="${langY}" font-size="11" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(l.lang)} ${l.pct.toFixed(0)}%</text>`;
+    svg += `<text x="${lx + 10}" y="${langY}" font-size="11" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(label)}</text>`;
+    lx += 10 + label.length * CHAR_W + 14;
   });
+  const hiddenLangCount = allLangs.length - shownLangs.length;
+  if (hiddenLangCount > 0) {
+    svg += `<text x="${lx}" y="${langY}" font-size="11" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}" opacity=".6">+${hiddenLangCount}</text>`;
+  }
 
   const tagY = 128;
   let tagX = 24;
