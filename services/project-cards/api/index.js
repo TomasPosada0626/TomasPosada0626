@@ -151,8 +151,6 @@ async function buildCard(repoFull, x, y, theme, token) {
   const allLangs = Object.entries(langBytes)
     .map(([lang, bytes]) => ({ lang, pct: (bytes / totalBytes) * 100 }))
     .sort((a, b) => b.pct - a.pct);
-  const langs = allLangs.slice(0, 3); // legend only shows the top few; the ring below uses all of them
-
   const descLines = wrap(details.description || "No description yet.", 40, 2);
   const tags = (details.topics || []).slice(0, 3);
 
@@ -166,20 +164,30 @@ async function buildCard(repoFull, x, y, theme, token) {
   svg += `<text x="58" y="30" font-size="15" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${esc(truncate(name, 22))}</text>`;
   svg += `<text x="58" y="46" font-size="10.5" letter-spacing=".04em" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}" opacity=".7">${esc(owner)}/${esc(name)}</text>`;
 
+  // Every block sits at a FIXED y, the same in all six cards, rather
+  // than flowing from wherever the previous block happened to end --
+  // that's what makes the grid read as aligned instead of each card
+  // drifting to its own rhythm. The one thing that has to be capped to
+  // make fixed slots safe is the language legend: it's the only
+  // variable-height block (1 row for <=2 languages, 2 rows for 3+),
+  // and a 2-row legend plus a full tag row was overflowing into the
+  // footer on repos with 3+ languages (e.g. Prodexa) -- so the legend
+  // always shows at most the top 2 (the ring below still reflects all
+  // of them, this is just the text legend).
+  const legendLangs = allLangs.slice(0, 2);
   descLines.forEach((line, i) => {
     svg += `<text x="24" y="${66 + i * 14}" font-size="12" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(line)}</text>`;
   });
 
-  let ty = 96;
-  langs.forEach((l, i) => {
-    const lx = 24 + (i % 2) * 150;
-    const ly = ty + Math.floor(i / 2) * 18;
+  const langY = 100;
+  legendLangs.forEach((l, i) => {
+    const lx = 24 + i * 150;
     const color = theme.rank[i % theme.rank.length];
-    svg += `<circle cx="${lx}" cy="${ly - 4}" r="3.5" fill="${color}"/>`;
-    svg += `<text x="${lx + 10}" y="${ly}" font-size="11" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(l.lang)} ${l.pct.toFixed(0)}%</text>`;
+    svg += `<circle cx="${lx}" cy="${langY - 4}" r="3.5" fill="${color}"/>`;
+    svg += `<text x="${lx + 10}" y="${langY}" font-size="11" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(l.lang)} ${l.pct.toFixed(0)}%</text>`;
   });
 
-  let tagY = ty + Math.ceil(langs.length / 2) * 18 + 12;
+  const tagY = 128;
   let tagX = 24;
   tags.forEach((tag) => {
     const w = tag.length * 6.2 + 16;
