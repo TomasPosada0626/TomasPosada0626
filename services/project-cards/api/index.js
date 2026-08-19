@@ -102,6 +102,48 @@ function iconMarkup(icon) {
   return `<path d="${icon.d}" fill="none" stroke="${icon.color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
 }
 
+// Framework/database/tool keywords worth surfacing over generic topic
+// words like "full-stack" or "manufacturing" -- checked (in this
+// order) against a repo's topics, then its description text, since
+// three of these six repos have no topics set at all but do name
+// their stack in the description (e.g. opera: "Electron + React +
+// TypeScript ... NestJS + Prisma + PostgreSQL").
+const KNOWN_TECH = [
+  ["nextjs", "Next.js"], ["next.js", "Next.js"], ["nestjs", "NestJS"], ["react", "React"],
+  ["electron", "Electron"], ["vite", "Vite"], ["tailwindcss", "Tailwind"], ["tailwind", "Tailwind"],
+  ["zustand", "Zustand"], ["prisma", "Prisma"], ["postgresql", "PostgreSQL"], ["postgres", "PostgreSQL"],
+  ["mongodb", "MongoDB"], ["supabase", "Supabase"], ["express", "Express"], ["nodejs", "Node.js"],
+  ["node.js", "Node.js"], ["docker", "Docker"], ["playwright", "Playwright"], ["pytorch", "PyTorch"],
+  ["tensorflow", "TensorFlow"], ["flutter", "Flutter"], ["firebase", "Firebase"],
+];
+
+function extractStack(topics, description) {
+  const found = [];
+  const seen = new Set();
+  const add = (label) => {
+    if (!seen.has(label)) {
+      seen.add(label);
+      found.push(label);
+    }
+  };
+  const topicSet = new Set((topics || []).map((t) => t.toLowerCase()));
+  for (const [key, label] of KNOWN_TECH) {
+    if (topicSet.has(key)) add(label);
+  }
+  const desc = (description || "").toLowerCase();
+  for (const [key, label] of KNOWN_TECH) {
+    if (found.length >= 4) break;
+    if (desc.includes(key)) add(label);
+  }
+  // fall back to filling remaining slots with the repo's own topics
+  // (domain descriptors) if recognized stack keywords didn't fill it
+  for (const t of topics || []) {
+    if (found.length >= 3) break;
+    add(t);
+  }
+  return found.slice(0, 3);
+}
+
 async function fetchJSON(url, token) {
   const headers = { "User-Agent": "project-cards", Accept: "application/vnd.github+json" };
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -196,7 +238,7 @@ async function buildCard(repoFull, x, y, theme, token) {
     .map(([lang, bytes]) => ({ lang, pct: (bytes / totalBytes) * 100 }))
     .sort((a, b) => b.pct - a.pct);
   const descLines = wrap(details.description || "No description yet.", 40, 2);
-  const tags = (details.topics || []).slice(0, 3);
+  const tags = extractStack(details.topics, details.description);
 
   const icon = ICONS[name.toLowerCase()] || DEFAULT_ICON;
 
