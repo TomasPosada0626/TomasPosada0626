@@ -110,10 +110,12 @@ function iconMarkup(icon) {
 // TypeScript ... NestJS + Prisma + PostgreSQL").
 const KNOWN_TECH = [
   ["nextjs", "Next.js"], ["next.js", "Next.js"], ["nestjs", "NestJS"], ["react", "React"],
+  ["django-rest-framework", "DRF"], ["django", "Django"], ["flask", "Flask"], ["fastapi", "FastAPI"],
   ["electron", "Electron"], ["vite", "Vite"], ["tailwindcss", "Tailwind"], ["tailwind", "Tailwind"],
   ["zustand", "Zustand"], ["prisma", "Prisma"], ["postgresql", "PostgreSQL"], ["postgres", "PostgreSQL"],
   ["mongodb", "MongoDB"], ["supabase", "Supabase"], ["express", "Express"], ["nodejs", "Node.js"],
-  ["node.js", "Node.js"], ["docker", "Docker"], ["playwright", "Playwright"], ["pytorch", "PyTorch"],
+  ["node.js", "Node.js"], ["redis", "Redis"], ["rabbitmq", "RabbitMQ"], ["celery", "Celery"],
+  ["nginx", "Nginx"], ["docker", "Docker"], ["playwright", "Playwright"], ["pytorch", "PyTorch"],
   ["tensorflow", "TensorFlow"], ["flutter", "Flutter"], ["firebase", "Firebase"],
 ];
 
