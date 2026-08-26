@@ -148,61 +148,101 @@ function buildLangCard(user, theme) {
 // each file under api/ is its own independent serverless function --
 // expanded here because this aggregates ALL owned repos, not just the
 // six featured ones, so it turns up tools that never showed up there.
+// Categorized (not one flat pill list) because that's what actually
+// reads as organized at 19+ items -- a wall of same-size pills in
+// discovery order doesn't, no matter how good any individual pill
+// looks; per-tech logos at 19 items would also cost more than they'd
+// add (several of these -- PostgreSQL's elephant, RabbitMQ's rabbit --
+// don't hold up at pill-icon size anyway).
 const KNOWN_TECH = [
-  ["nextjs", "Next.js"], ["next.js", "Next.js"], ["nestjs", "NestJS"], ["react", "React"],
-  ["django-rest-framework", "DRF"], ["django", "Django"], ["flask", "Flask"], ["fastapi", "FastAPI"],
-  ["electron", "Electron"], ["vite", "Vite"], ["tailwindcss", "Tailwind"], ["tailwind", "Tailwind"],
-  ["zustand", "Zustand"], ["prisma", "Prisma"], ["postgresql", "PostgreSQL"], ["postgres", "PostgreSQL"],
-  ["mongodb", "MongoDB"], ["supabase", "Supabase"], ["express", "Express"], ["nodejs", "Node.js"],
-  ["node.js", "Node.js"], ["redis", "Redis"], ["rabbitmq", "RabbitMQ"], ["celery", "Celery"],
-  ["nginx", "Nginx"], ["docker", "Docker"], ["playwright", "Playwright"], ["pytorch", "PyTorch"],
-  ["tensorflow", "TensorFlow"], ["flutter", "Flutter"], ["firebase", "Firebase"], ["graphql", "GraphQL"],
-  ["kubernetes", "Kubernetes"], ["aws", "AWS"], ["vue", "Vue"], ["angular", "Angular"],
-  ["sqlalchemy", "SQLAlchemy"], ["jwt", "JWT"], ["stripe", "Stripe"], ["websocket", "WebSocket"],
+  ["nextjs", "Next.js", "Frontend"], ["next.js", "Next.js", "Frontend"],
+  ["react", "React", "Frontend"], ["electron", "Electron", "Frontend"],
+  ["vite", "Vite", "Frontend"], ["tailwindcss", "Tailwind", "Frontend"],
+  ["tailwind", "Tailwind", "Frontend"], ["zustand", "Zustand", "Frontend"],
+  ["vue", "Vue", "Frontend"], ["angular", "Angular", "Frontend"],
+  ["nestjs", "NestJS", "Backend"], ["django-rest-framework", "DRF", "Backend"],
+  ["django", "Django", "Backend"], ["flask", "Flask", "Backend"],
+  ["fastapi", "FastAPI", "Backend"], ["express", "Express", "Backend"],
+  ["nodejs", "Node.js", "Backend"], ["node.js", "Node.js", "Backend"],
+  ["graphql", "GraphQL", "Backend"], ["websocket", "WebSocket", "Backend"],
+  ["jwt", "JWT", "Backend"],
+  ["postgresql", "PostgreSQL", "Database"], ["postgres", "PostgreSQL", "Database"],
+  ["mongodb", "MongoDB", "Database"], ["prisma", "Prisma", "Database"],
+  ["redis", "Redis", "Database"], ["sqlalchemy", "SQLAlchemy", "Database"],
+  ["supabase", "Supabase", "Database"], ["firebase", "Firebase", "Database"],
+  ["docker", "Docker", "DevOps"], ["kubernetes", "Kubernetes", "DevOps"],
+  ["aws", "AWS", "DevOps"], ["nginx", "Nginx", "DevOps"],
+  ["rabbitmq", "RabbitMQ", "DevOps"], ["celery", "Celery", "DevOps"],
+  ["playwright", "Playwright", "DevOps"], ["stripe", "Stripe", "DevOps"],
+  ["pytorch", "PyTorch", "ML"], ["tensorflow", "TensorFlow", "ML"],
+  ["flutter", "Flutter", "Mobile"],
 ];
+const CATEGORY_ORDER = ["Frontend", "Backend", "Database", "DevOps", "ML", "Mobile"];
 
 function extractRepoStack(repo) {
   const found = [];
   const topics = (repo.repositoryTopics?.nodes || []).map((n) => n.topic.name.toLowerCase());
   const desc = (repo.description || "").toLowerCase();
-  for (const [key, label] of KNOWN_TECH) {
-    if (topics.includes(key) || desc.includes(key)) found.push(label);
+  for (const [key, label, category] of KNOWN_TECH) {
+    if (topics.includes(key) || desc.includes(key)) found.push({ label, category });
   }
   return found;
 }
 
 function buildStackCard(user, theme) {
-  const counts = new Map();
+  const counts = new Map(); // label -> {count, category}
   for (const repo of user.repositories.nodes) {
-    for (const label of new Set(extractRepoStack(repo))) {
-      counts.set(label, (counts.get(label) || 0) + 1);
+    const seen = new Set();
+    for (const { label, category } of extractRepoStack(repo)) {
+      if (seen.has(label)) continue;
+      seen.add(label);
+      const cur = counts.get(label) || { count: 0, category };
+      cur.count += 1;
+      counts.set(label, cur);
     }
   }
-  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+
+  const byCategory = new Map();
+  for (const [label, { count, category }] of counts.entries()) {
+    if (!byCategory.has(category)) byCategory.set(category, []);
+    byCategory.get(category).push({ label, count });
+  }
+  for (const items of byCategory.values()) items.sort((a, b) => b.count - a.count);
 
   const W = 1180;
   const padX = 24;
-  const pillH = 26, pillGapX = 8, pillGapY = 10, rowStartY = 46;
-  let px = padX, py = rowStartY;
-  const pills = [];
-  sorted.forEach(([label, count], i) => {
-    const w = label.length * 7.2 + 26;
-    if (px + w > W - padX) {
-      px = padX;
-      py += pillH + pillGapY;
-    }
-    const color = theme.rank[i % theme.rank.length];
-    pills.push(
-      `<rect x="${px.toFixed(1)}" y="${py}" width="${w.toFixed(1)}" height="${pillH}" rx="13" fill="${color}22" stroke="${color}66" stroke-width="1"/>` +
-      `<text x="${(px + w / 2).toFixed(1)}" y="${py + 17}" text-anchor="middle" font-size="12" font-weight="600" font-family="ui-monospace,Consolas,monospace" fill="${color}">${esc(label)}</text>`
-    );
-    px += w + pillGapX;
+  const pillH = 24, pillGapX = 8, pillGapY = 10, rowGapY = 30;
+  let py = 44;
+  const parts = [];
+
+  CATEGORY_ORDER.forEach((category, ci) => {
+    const items = byCategory.get(category);
+    if (!items || items.length === 0) return;
+    const color = theme.rank[ci % theme.rank.length];
+
+    parts.push(`<text x="${padX}" y="${py}" font-size="10.5" letter-spacing=".08em" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}" opacity=".75">${category.toUpperCase()}</text>`);
+    let px = padX;
+    let rowY = py + 16;
+    items.forEach(({ label }) => {
+      const w = label.length * 7.2 + 26;
+      if (px + w > W - padX) {
+        px = padX;
+        rowY += pillH + pillGapY;
+      }
+      parts.push(
+        `<rect x="${px.toFixed(1)}" y="${rowY}" width="${w.toFixed(1)}" height="${pillH}" rx="12" fill="${color}22" stroke="${color}66" stroke-width="1"/>` +
+        `<text x="${(px + w / 2).toFixed(1)}" y="${rowY + 16}" text-anchor="middle" font-size="11.5" font-weight="600" font-family="ui-monospace,Consolas,monospace" fill="${color}">${esc(label)}</text>`
+      );
+      px += w + pillGapX;
+    });
+    py = rowY + pillH + rowGapY;
   });
-  const H = py + pillH + 20;
+
+  const H = parts.length ? py - rowGapY + 16 : 60;
 
   let svg = `<rect width="${W}" height="${H}" rx="10" fill="${theme.card}" stroke="${theme.border}" stroke-width="1.2"/>`;
   svg += `<text x="${padX}" y="30" font-size="14" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}">Tech Stack</text>`;
-  svg += pills.join("");
+  svg += parts.join("");
 
   return { svg, w: W, h: H };
 }
