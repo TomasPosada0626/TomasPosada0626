@@ -93,10 +93,18 @@ function buildStatsCard(user, theme) {
   return { svg, w: W, h: H };
 }
 
+// Excluded from the aggregate, same call made for the project cards'
+// top-langs earlier: a notebook's saved cell OUTPUT (images, tables)
+// is stored as JSON in the .ipynb file itself, so GitHub counts it as
+// "Jupyter Notebook" bytes even though little of it is authored code
+// -- it was dwarfing every real language at ~72% of the total.
+const EXCLUDED_LANGS = new Set(["Jupyter Notebook"]);
+
 function buildLangCard(user, theme) {
   const totals = new Map();
   for (const repo of user.repositories.nodes) {
     for (const edge of repo.languages.edges) {
+      if (EXCLUDED_LANGS.has(edge.node.name)) continue;
       totals.set(edge.node.name, (totals.get(edge.node.name) || 0) + edge.size);
     }
   }
