@@ -5,16 +5,30 @@
 </picture>
 
 <!--
-  Streak stats and the github-readme-stats cards (stats + top-langs)
-  were both here at different points -- pulled entirely, not just
-  hidden, because both sources (the public streak-stats.demolab.com
-  and the self-hosted forks) proved unreliable across this whole
-  build: intermittent 503s on the public one, Vercel domain drift and
-  branch-vs-production mismatches on the self-hosted ones. Nothing
-  left needing a URL swap here if that changes later -- the forks
-  (github-readme-stats, github-readme-streak-stats) and their Vercel
-  projects are safe to delete; only project-cards is still in use.
+  Streak stats used to be here too -- pulled entirely (not just
+  hidden) because the public streak-stats.demolab.com kept 503ing and
+  the self-hosted fork kept fighting Vercel's production-branch
+  setting. The stats/top-langs cards below replaced the OTHER
+  unreliable fork (github-readme-stats) with original code in
+  services/project-cards/api/stats.js -- same GH_TOKEN/PAT_1 env var
+  that endpoint's card grid already uses, so no new Vercel project.
+  Both github-readme-stats and github-readme-streak-stats (and their
+  Vercel projects) are safe to delete now; nothing here points at
+  either anymore.
 -->
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark">
+    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light">
+    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark" width="49%" alt="Tomas' GitHub stats">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs">
+    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&card=langs">
+    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs" width="49%" alt="Most used languages">
+  </picture>
+</p>
 
 <br>
 
