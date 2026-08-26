@@ -31,15 +31,21 @@ const THEMES = {
     // language it actually is -- every card cycles the same three
     // profile-palette hues so the grid reads as one cohesive system
     // instead of a scatter of each language's own (clashing) brand
-    // colour. Matches the reference profile's card style.
-    rank: ["#A78BFA", "#22D3EE", "#10B981", "#F5B942", "#EF4444", "#8892B0"],
+    // colour. Matches the reference profile's card style. Ordered to
+    // alternate warm/cool so two ADJACENT ranks (the pair most likely
+    // to sit next to each other in a donut ring) are never two shades
+    // of the same temperature -- the old order put cyan next to
+    // emerald (both cool) right where 3-language repos actually split.
+    // Grey/gold nudged up in lightness too: at a thin ring-segment
+    // width they were reading as near-invisible against the card.
+    rank: ["#A78BFA", "#FBBF24", "#22D3EE", "#F87171", "#10B981", "#94A3B8"],
   },
   light: {
     bg: "#FFFFFF", card: "#F3F1FC", cardEnd: "#ECE9FA", border: "#0891B233",
     title: "#1E2433", desc: "#5B6478", chrome: "#0891B2",
     accent: "#10B981", tagBg: "#7C3AED26", tagText: "#7C3AED",
     ring_track: "#E2E6F0",
-    rank: ["#7C3AED", "#0891B2", "#10B981", "#D97706", "#DC2626", "#64748B"],
+    rank: ["#7C3AED", "#D97706", "#0891B2", "#DC2626", "#10B981", "#64748B"],
   },
 };
 
@@ -215,15 +221,31 @@ function donut(cx, cy, r, allLangsIn, track, rankColors) {
   }
   const stroke = 5;
   const circumference = 2 * Math.PI * r;
-  const gapDeg = allLangs.length > 1 ? 2.2 : 0; // small visual gap between segments
+  const n = allLangs.length;
+  const gapDeg = n > 1 ? 2.2 : 0; // small visual gap between segments
+
+  // Real shares would leave any language under ~4% as a sub-degree
+  // sliver, indistinguishable from the gap beside it -- so a 95/4/1
+  // split rendered as "one solid colour," not three. Floor every
+  // segment to a minimum visible slot, borrowed proportionally from
+  // whichever segments have slack above the floor, so minor languages
+  // stay a visibly *different colour* instead of vanishing into it.
+  const minDeg = n > 1 ? 16 : 0;
+  const rawDeg = allLangs.map((l) => (l.pct / 100) * 360);
+  const short = rawDeg.map((d) => d < minDeg);
+  const shortTotal = short.reduce((a, s) => a + (s ? minDeg : 0), 0);
+  const longRawTotal = rawDeg.reduce((a, d, i) => a + (short[i] ? 0 : d), 0);
+  const scale = longRawTotal > 0 ? (360 - shortTotal) / longRawTotal : 1;
+  const slotDeg = rawDeg.map((d, i) => (short[i] ? minDeg : d * scale));
+
   let cum = 0;
   const segments = allLangs
-    .map(({ pct }, i) => {
+    .map((_, i) => {
       const color = rankColors[i % rankColors.length];
-      const segFraction = Math.max(0, pct / 100 - gapDeg / 360);
-      const dash = segFraction * circumference;
-      const offset = -(cum / 100) * circumference;
-      cum += pct;
+      const segDeg = Math.max(0, slotDeg[i] - gapDeg);
+      const dash = (segDeg / 360) * circumference;
+      const offset = -(cum / 360) * circumference;
+      cum += slotDeg[i];
       return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
         stroke-linecap="round" stroke-dasharray="${dash.toFixed(1)} ${circumference.toFixed(1)}"
         stroke-dashoffset="${offset.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`;

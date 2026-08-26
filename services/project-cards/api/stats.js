@@ -143,124 +143,20 @@ function buildLangCard(user, theme) {
   return { svg, w: W, h: H };
 }
 
-// Same idea as extractStack() in index.js (frameworks/DBs/tools worth
-// naming over raw topic words), duplicated rather than imported since
-// each file under api/ is its own independent serverless function --
-// expanded here because this aggregates ALL owned repos, not just the
-// six featured ones, so it turns up tools that never showed up there.
-// Categorized (not one flat pill list) because that's what actually
-// reads as organized at 19+ items -- a wall of same-size pills in
-// discovery order doesn't, no matter how good any individual pill
-// looks; per-tech logos at 19 items would also cost more than they'd
-// add (several of these -- PostgreSQL's elephant, RabbitMQ's rabbit --
-// don't hold up at pill-icon size anyway).
-const KNOWN_TECH = [
-  ["nextjs", "Next.js", "Frontend"], ["next.js", "Next.js", "Frontend"],
-  ["react", "React", "Frontend"], ["electron", "Electron", "Frontend"],
-  ["vite", "Vite", "Frontend"], ["tailwindcss", "Tailwind", "Frontend"],
-  ["tailwind", "Tailwind", "Frontend"], ["zustand", "Zustand", "Frontend"],
-  ["vue", "Vue", "Frontend"], ["angular", "Angular", "Frontend"],
-  ["nestjs", "NestJS", "Backend"], ["django-rest-framework", "DRF", "Backend"],
-  ["django", "Django", "Backend"], ["flask", "Flask", "Backend"],
-  ["fastapi", "FastAPI", "Backend"], ["express", "Express", "Backend"],
-  ["nodejs", "Node.js", "Backend"], ["node.js", "Node.js", "Backend"],
-  ["graphql", "GraphQL", "Backend"], ["websocket", "WebSocket", "Backend"],
-  ["jwt", "JWT", "Backend"],
-  ["postgresql", "PostgreSQL", "Database"], ["postgres", "PostgreSQL", "Database"],
-  ["mongodb", "MongoDB", "Database"], ["prisma", "Prisma", "Database"],
-  ["redis", "Redis", "Database"], ["sqlalchemy", "SQLAlchemy", "Database"],
-  ["supabase", "Supabase", "Database"], ["firebase", "Firebase", "Database"],
-  ["docker", "Docker", "DevOps"], ["kubernetes", "Kubernetes", "DevOps"],
-  ["aws", "AWS", "DevOps"], ["nginx", "Nginx", "DevOps"],
-  ["rabbitmq", "RabbitMQ", "DevOps"], ["celery", "Celery", "DevOps"],
-  ["playwright", "Playwright", "DevOps"], ["stripe", "Stripe", "DevOps"],
-  ["pytorch", "PyTorch", "ML"], ["tensorflow", "TensorFlow", "ML"],
-  ["flutter", "Flutter", "Mobile"],
-];
-const CATEGORY_ORDER = ["Frontend", "Backend", "Database", "DevOps", "ML", "Mobile"];
-
-function extractRepoStack(repo) {
-  const found = [];
-  const topics = (repo.repositoryTopics?.nodes || []).map((n) => n.topic.name.toLowerCase());
-  const desc = (repo.description || "").toLowerCase();
-  for (const [key, label, category] of KNOWN_TECH) {
-    if (topics.includes(key) || desc.includes(key)) found.push({ label, category });
-  }
-  return found;
-}
-
-function buildStackCard(user, theme) {
-  const counts = new Map(); // label -> {count, category}
-  for (const repo of user.repositories.nodes) {
-    const seen = new Set();
-    for (const { label, category } of extractRepoStack(repo)) {
-      if (seen.has(label)) continue;
-      seen.add(label);
-      const cur = counts.get(label) || { count: 0, category };
-      cur.count += 1;
-      counts.set(label, cur);
-    }
-  }
-
-  const byCategory = new Map();
-  for (const [label, { count, category }] of counts.entries()) {
-    if (!byCategory.has(category)) byCategory.set(category, []);
-    byCategory.get(category).push({ label, count });
-  }
-  for (const items of byCategory.values()) items.sort((a, b) => b.count - a.count);
-
-  const W = 1180;
-  const padX = 24;
-  const pillH = 24, pillGapX = 8, pillGapY = 10, rowGapY = 30;
-  let py = 44;
-  const parts = [];
-
-  CATEGORY_ORDER.forEach((category, ci) => {
-    const items = byCategory.get(category);
-    if (!items || items.length === 0) return;
-    const color = theme.rank[ci % theme.rank.length];
-
-    parts.push(`<text x="${padX}" y="${py}" font-size="10.5" letter-spacing=".08em" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}" opacity=".75">${category.toUpperCase()}</text>`);
-    let px = padX;
-    let rowY = py + 16;
-    items.forEach(({ label }) => {
-      const w = label.length * 7.2 + 26;
-      if (px + w > W - padX) {
-        px = padX;
-        rowY += pillH + pillGapY;
-      }
-      parts.push(
-        `<rect x="${px.toFixed(1)}" y="${rowY}" width="${w.toFixed(1)}" height="${pillH}" rx="12" fill="${color}22" stroke="${color}66" stroke-width="1"/>` +
-        `<text x="${(px + w / 2).toFixed(1)}" y="${rowY + 16}" text-anchor="middle" font-size="11.5" font-weight="600" font-family="ui-monospace,Consolas,monospace" fill="${color}">${esc(label)}</text>`
-      );
-      px += w + pillGapX;
-    });
-    py = rowY + pillH + rowGapY;
-  });
-
-  const H = parts.length ? py - rowGapY + 16 : 60;
-
-  let svg = `<rect width="${W}" height="${H}" rx="10" fill="${theme.card}" stroke="${theme.border}" stroke-width="1.2"/>`;
-  svg += `<text x="${padX}" y="30" font-size="14" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}">Tech Stack</text>`;
-  svg += parts.join("");
-
-  return { svg, w: W, h: H };
-}
-
 module.exports = async (req, res) => {
   try {
     const url = new URL(req.url, "https://x");
     const username = url.searchParams.get("username") || "TomasPosada0626";
     const themeName = url.searchParams.get("theme") === "light" ? "light" : "dark";
     const cardParam = url.searchParams.get("card");
-    const card = cardParam === "langs" ? "langs" : cardParam === "stack" ? "stack" : "stats";
+    const card = cardParam === "langs" ? "langs" : "stats";
     const theme = THEMES[themeName];
 
     const token = process.env.GH_TOKEN || process.env.PAT_1;
     if (!token) throw new Error("GH_TOKEN/PAT_1 not set");
 
     const user = await fetchStats(username, token);
-    const builders = { stats: buildStatsCard, langs: buildLangCard, stack: buildStackCard };
+    const builders = { stats: buildStatsCard, langs: buildLangCard };
     const { svg: inner, w, h } = builders[card](user, theme);
 
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${inner}</svg>`;
