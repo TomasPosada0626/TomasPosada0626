@@ -32,14 +32,14 @@ const THEMES = {
     // profile-palette hues so the grid reads as one cohesive system
     // instead of a scatter of each language's own (clashing) brand
     // colour. Matches the reference profile's card style.
-    rank: ["#A78BFA", "#22D3EE", "#10B981"],
+    rank: ["#A78BFA", "#22D3EE", "#10B981", "#F5B942", "#EF4444", "#8892B0"],
   },
   light: {
     bg: "#FFFFFF", card: "#F3F1FC", cardEnd: "#ECE9FA", border: "#0891B233",
     title: "#1E2433", desc: "#5B6478", chrome: "#0891B2",
     accent: "#10B981", tagBg: "#7C3AED26", tagText: "#7C3AED",
     ring_track: "#E2E6F0",
-    rank: ["#7C3AED", "#0891B2", "#10B981"],
+    rank: ["#7C3AED", "#0891B2", "#10B981", "#D97706", "#DC2626", "#64748B"],
   },
 };
 
@@ -197,11 +197,22 @@ function wrap(text, maxChars, maxLines) {
   return lines;
 }
 
-function donut(cx, cy, r, allLangs, track, rankColors) {
+function donut(cx, cy, r, allLangsIn, track, rankColors) {
   // One arc segment per language, each sized to its own share and
   // coloured by RANK (1st/2nd/3rd, cycling rankColors) rather than by
   // which language it actually is -- keeps every card on the same
-  // three-hue system regardless of what it's written in.
+  // palette regardless of what it's written in. Capped to the top 5 +
+  // one "Other" segment (rankColors' last, neutral grey) rather than
+  // one arc per language: past ~5-6 languages the slivers get thin
+  // enough to be unreadable, and with only 6 rank colors to cycle,
+  // repos with 7+ languages were reusing the same colour for two
+  // genuinely different ones -- both are just noise, not signal.
+  let allLangs = allLangsIn;
+  if (allLangsIn.length > 6) {
+    const top = allLangsIn.slice(0, 5);
+    const otherPct = allLangsIn.slice(5).reduce((a, l) => a + l.pct, 0);
+    allLangs = [...top, { lang: "Other", pct: otherPct }];
+  }
   const stroke = 5;
   const circumference = 2 * Math.PI * r;
   const gapDeg = allLangs.length > 1 ? 2.2 : 0; // small visual gap between segments
