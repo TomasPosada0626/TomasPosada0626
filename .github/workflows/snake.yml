@@ -29,6 +29,20 @@ jobs:
             dist/snake-dark.svg?color_snake=%2310b981&color_dots=%232d3343,%230891b2,%2322d3ee,%23a78bfa,%237c3aed
             dist/snake-light.svg?color_snake=%237c3aed&color_dots=%23ebedf0,%230891b2,%2322d3ee,%2310b981,%237c3aed
 
+      - name: placeholder so Vercel's Root Directory check doesn't fail here
+        # Vercel's GitHub App watches every branch of this repo, including
+        # `output` (it has no way to know only `main` matters) -- so every
+        # force-push here also fires an automatic Preview build attempt for
+        # the project-cards Vercel project. That project's Root Directory
+        # is services/project-cards, which doesn't exist on this branch,
+        # and Vercel resolves Root Directory *before* it ever gets to
+        # evaluate Ignored Build Step, so that setting can't skip it either
+        # -- the build fails at checkout and Vercel emails a deploy-failed
+        # notice every ~12h. A trivial file at that same path is enough to
+        # let Root Directory resolve; Ignored Build Step then runs as
+        # normal and skips the build for any branch that isn't main.
+        run: mkdir -p dist/services/project-cards && echo "placeholder so Vercel's Root Directory check doesn't fail on this branch" > dist/services/project-cards/.keep
+
       - name: push grids to the output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
         with:
