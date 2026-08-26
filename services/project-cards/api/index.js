@@ -23,7 +23,7 @@ const PAD = 4;
 
 const THEMES = {
   dark: {
-    bg: "#0A101F", card: "#0D1526", border: "#22D3EE33",
+    bg: "#0A101F", card: "#0D1526", cardEnd: "#0A0F1D", border: "#22D3EE33",
     title: "#E7ECFB", desc: "#9AA4C0", chrome: "#22D3EE",
     accent: "#10B981", tagBg: "#A78BFA26", tagText: "#A78BFA",
     ring_track: "#1E2740",
@@ -35,7 +35,7 @@ const THEMES = {
     rank: ["#A78BFA", "#22D3EE", "#10B981"],
   },
   light: {
-    bg: "#FFFFFF", card: "#F3F1FC", border: "#0891B233",
+    bg: "#FFFFFF", card: "#F3F1FC", cardEnd: "#ECE9FA", border: "#0891B233",
     title: "#1E2433", desc: "#5B6478", chrome: "#0891B2",
     accent: "#10B981", tagBg: "#7C3AED26", tagText: "#7C3AED",
     ring_track: "#E2E6F0",
@@ -219,13 +219,29 @@ function donut(cx, cy, r, allLangs, track, rankColors) {
     })
     .join("");
   const topColor = rankColors[0];
-  const topPct = allLangs[0]?.pct || 0;
+  const topPct = Math.round(allLangs[0]?.pct || 0);
+  // number set larger than its own "%" (a smaller, slightly raised
+  // sibling glyph) reads as a stat/metric instead of a plain label --
+  // common editorial-dashboard convention.
+  const numW = String(topPct).length * 8.6;
   return `
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${track}" stroke-width="${stroke}"/>
     ${segments}
-    <text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="15" font-weight="700"
-      font-family="ui-monospace,Consolas,monospace" fill="${topColor}">${Math.round(topPct)}%</text>
+    <text x="${(cx - numW / 2).toFixed(1)}" y="${cy + 5}" font-size="16" font-weight="700"
+      font-family="ui-monospace,Consolas,monospace" fill="${topColor}">${topPct}</text>
+    <text x="${(cx - numW / 2 + numW).toFixed(1)}" y="${cy + 1}" font-size="10" font-weight="600"
+      font-family="ui-monospace,Consolas,monospace" fill="${topColor}" opacity=".8">%</text>
   `;
+}
+
+function starIcon(cx, cy, r, color) {
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const ang = (Math.PI / 5) * i - Math.PI / 2;
+    const rad = i % 2 === 0 ? r : r * 0.42;
+    pts.push(`${(cx + rad * Math.cos(ang)).toFixed(1)},${(cy + rad * Math.sin(ang)).toFixed(1)}`);
+  }
+  return `<polygon points="${pts.join(" ")}" fill="${color}"/>`;
 }
 
 async function buildCard(repoFull, x, y, theme, token) {
@@ -243,15 +259,27 @@ async function buildCard(repoFull, x, y, theme, token) {
   const tags = extractStack(details.topics, details.description);
 
   const icon = ICONS[name.toLowerCase()] || DEFAULT_ICON;
+  const gid = `cardbg-${name.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+  const topAccent = theme.rank[0];
 
+  const clipId = `${gid}-clip`;
   let svg = `<g transform="translate(${x},${y})">`;
-  svg += `<rect width="${CARD_W}" height="${CARD_H}" rx="10" fill="${theme.card}" stroke="${theme.border}" stroke-width="1.2"/>`;
+  svg += `<defs>
+      <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${theme.card}"/>
+        <stop offset="100%" stop-color="${theme.cardEnd}"/>
+      </linearGradient>
+      <clipPath id="${clipId}"><rect width="${CARD_W}" height="${CARD_H}" rx="10"/></clipPath>
+    </defs>`;
+  svg += `<rect width="${CARD_W}" height="${CARD_H}" rx="10" fill="url(#${gid})" stroke="${theme.border}" stroke-width="1.2"/>`;
+  svg += `<g clip-path="url(#${clipId})"><rect width="${CARD_W}" height="3" fill="${topAccent}"/></g>`;
+  svg += `<line x1="20" y1="54" x2="${CARD_W - 20}" y2="54" stroke="${theme.border}" stroke-width="1"/>`;
 
   const iconBorder = icon.color || icon.colorTop;
   svg += `<rect x="20" y="16" width="28" height="28" rx="7" fill="${iconBorder}22" stroke="${iconBorder}" stroke-width="1.2"/>`;
   svg += `<g transform="translate(20,16)">${iconMarkup(icon)}</g>`;
   svg += `<text x="58" y="30" font-size="15" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${esc(truncate(name, 22))}</text>`;
-  svg += `<text x="58" y="46" font-size="10.5" letter-spacing=".04em" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}" opacity=".7">${esc(owner)}/${esc(name)}</text>`;
+  svg += `<text x="58" y="46" font-size="10" letter-spacing=".04em" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}" opacity=".5">${esc(owner)}/${esc(name)}</text>`;
 
   // Every block sits at a FIXED y, the same in all six cards, rather
   // than flowing from wherever the previous block happened to end --
@@ -294,7 +322,8 @@ async function buildCard(repoFull, x, y, theme, token) {
     tagX += w + 8;
   });
 
-  svg += `<text x="24" y="${CARD_H - 14}" font-size="10.5" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">★ ${details.stargazers_count}  ·  updated ${relativeTime(details.pushed_at)}</text>`;
+  svg += starIcon(27, CARD_H - 17, 5, "#F5B942");
+  svg += `<text x="34" y="${CARD_H - 14}" font-size="10.5" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${details.stargazers_count}  ·  updated ${relativeTime(details.pushed_at)}</text>`;
 
   svg += donut(CARD_W - 46, 46, 26, allLangs, theme.ring_track, theme.rank);
   svg += `</g>`;
