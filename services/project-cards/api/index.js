@@ -344,7 +344,7 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const token = process.env.GH_TOKEN;
+    const token = process.env.GH_TOKEN || process.env.PAT_1;
     const rows = Math.ceil(repos.length / COLS);
     const width = COLS * CARD_W + (COLS - 1) * GAP + PAD * 2;
     const height = rows * CARD_H + (rows - 1) * GAP + PAD * 2;

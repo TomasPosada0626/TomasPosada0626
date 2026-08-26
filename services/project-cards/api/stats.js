@@ -139,8 +139,8 @@ module.exports = async (req, res) => {
     const card = url.searchParams.get("card") === "langs" ? "langs" : "stats";
     const theme = THEMES[themeName];
 
-    const token = process.env.GH_TOKEN;
-    if (!token) throw new Error("GH_TOKEN not set");
+    const token = process.env.GH_TOKEN || process.env.PAT_1;
+    if (!token) throw new Error("GH_TOKEN/PAT_1 not set");
 
     const user = await fetchStats(username, token);
     const { svg: inner, w, h } = card === "langs" ? buildLangCard(user, theme) : buildStatsCard(user, theme);
