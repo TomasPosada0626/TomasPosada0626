@@ -32,9 +32,9 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=stack">
-    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&card=stack">
-    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=stack" width="100%" alt="Tech stack across all repos">
+    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=stack&v=1">
+    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&card=stack&v=1">
+    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=stack&v=1" width="100%" alt="Tech stack across all repos">
   </picture>
 </p>
 
