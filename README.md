@@ -24,9 +24,9 @@
     <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&v=1" width="49%" alt="Tomas' GitHub stats">
   </picture>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs">
-    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&card=langs">
-    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs" width="49%" alt="Most used languages">
+    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs&v=1">
+    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&card=langs&v=1">
+    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs&v=1" width="49%" alt="Most used languages">
   </picture>
 </p>
 
