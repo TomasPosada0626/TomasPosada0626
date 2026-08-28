@@ -19,14 +19,14 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&v=1">
-    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&v=1">
-    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&v=1" width="49%" alt="Tomas' GitHub stats">
+    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&v=2">
+    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&v=2">
+    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&v=2" width="49%" alt="Tomas' GitHub stats">
   </picture>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs&v=1">
-    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&card=langs&v=1">
-    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs&v=1" width="49%" alt="Most used languages">
+    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs&v=2">
+    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&card=langs&v=2">
+    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs&v=2" width="49%" alt="Most used languages">
   </picture>
 </p>
 
@@ -54,9 +54,9 @@
 <sub><b>PROJECTS.LIST</b> &nbsp;<code>./projects.sh --all</code></sub>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=dark&v=12">
-  <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=light&v=12">
-  <img src="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=dark&v=12" alt="Featured projects" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=dark&v=13">
+  <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=light&v=13">
+  <img src="https://tomas-posada0626.vercel.app/api?repos=TomasPosada0626/cucu%2CTomasPosada0626/Amparo%2CTomasPosada0626/opera%2CTomasPosada0626/Prodexa%2CTomasPosada0626/epsilon%2CTomasPosada0626/Neuroroutine&theme=dark&v=13" alt="Featured projects" width="100%">
 </picture>
 
 <br><br>
