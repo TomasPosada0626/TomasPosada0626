@@ -19,9 +19,9 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark">
-    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light">
-    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark" width="49%" alt="Tomas' GitHub stats">
+    <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&v=1">
+    <source media="(prefers-color-scheme: light)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=light&v=1">
+    <img src="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&v=1" width="49%" alt="Tomas' GitHub stats">
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://tomas-posada0626.vercel.app/api/stats?username=TomasPosada0626&theme=dark&card=langs">
