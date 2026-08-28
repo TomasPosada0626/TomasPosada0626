@@ -75,12 +75,18 @@ function esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-function statRow(y, icon, label, value, theme) {
-  return (
-    `<text x="24" y="${y}" font-size="13" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}">${icon}</text>` +
-    `<text x="46" y="${y}" font-size="13" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(label)}:</text>` +
-    `<text x="356" y="${y}" text-anchor="end" font-size="13" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${value}</text>`
-  );
+function statRow(y, icon, label, value, theme, delay) {
+  // Rows cascade in one at a time on load (like the project cards'
+  // stagger, and the banner's own SMIL animation) instead of the whole
+  // card just appearing -- makes it read as "live data streaming in"
+  // rather than a static image.
+  return `<g opacity="0">
+      <animate attributeName="opacity" from="0" to="1" begin="${delay}s" dur="0.4s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="translate" from="-6 0" to="0 0" begin="${delay}s" dur="0.4s" fill="freeze"/>
+      <text x="24" y="${y}" font-size="13" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}">${icon}</text>
+      <text x="46" y="${y}" font-size="13" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(label)}:</text>
+      <text x="356" y="${y}" text-anchor="end" font-size="13" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${value}</text>
+    </g>`;
 }
 
 function buildStatsCard(user, theme) {
@@ -112,7 +118,8 @@ function buildStatsCard(user, theme) {
   let svg = `<rect width="${W}" height="${H}" rx="10" fill="${theme.card}" stroke="${theme.border}" stroke-width="1.2"/>`;
   svg += `<text x="24" y="30" font-size="14" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}">TomasPosada0626's GitHub Stats</text>`;
   rows.forEach(([icon, label, value], i) => {
-    svg += statRow(58 + i * 22, icon, label, value.toLocaleString(), theme);
+    const delay = (0.1 + i * 0.09).toFixed(2);
+    svg += statRow(58 + i * 22, icon, label, value.toLocaleString(), theme, delay);
   });
   return { svg, w: W, h: H };
 }
@@ -155,11 +162,20 @@ function buildLangCard(user, theme) {
   const scale = longRawTotal > 0 ? (barW - shortTotal) / longRawTotal : 1;
   const segW = rawW.map((w, i) => (short[i] ? minW : w * scale));
 
+  // Bar fills left-to-right on load via a clip that grows, rather than
+  // just appearing -- a "reading the data live" effect that fits a
+  // stat this literally is a fraction of a whole.
+  const wipeId = "langbar-wipe";
+  svg += `<defs><clipPath id="${wipeId}"><rect x="${barX}" y="${barY}" width="0" height="${barH}">
+      <animate attributeName="width" values="0;${barW}" keyTimes="0;1" calcMode="spline" keySplines="0.25 0.1 0.25 1" begin="0.1s" dur="0.9s" fill="freeze"/>
+    </rect></clipPath></defs>`;
+  svg += `<g clip-path="url(#${wipeId})">`;
   let cx = barX;
   langs.forEach((l, i) => {
     svg += `<rect x="${cx.toFixed(1)}" y="${barY}" width="${Math.max(segW[i], 0).toFixed(1)}" height="${barH}" fill="${l.color}"/>`;
     cx += segW[i];
   });
+  svg += `</g>`;
   svg += `<rect x="${barX}" y="${barY}" width="${barW}" height="${barH}" rx="5" fill="none"/>`;
 
   const legendY = 78;
@@ -167,8 +183,12 @@ function buildLangCard(user, theme) {
     const col = i % 2, row = Math.floor(i / 2);
     const lx = 24 + col * 180;
     const ly = legendY + row * 24;
-    svg += `<circle cx="${lx}" cy="${ly - 4}" r="4" fill="${l.color}"/>`;
-    svg += `<text x="${lx + 12}" y="${ly}" font-size="11.5" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(l.name)} ${l.pct.toFixed(1)}%</text>`;
+    const delay = (0.5 + i * 0.08).toFixed(2);
+    svg += `<g opacity="0">
+        <animate attributeName="opacity" from="0" to="1" begin="${delay}s" dur="0.4s" fill="freeze"/>
+        <circle cx="${lx}" cy="${ly - 4}" r="4" fill="${l.color}"/>
+        <text x="${lx + 12}" y="${ly}" font-size="11.5" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(l.name)} ${l.pct.toFixed(1)}%</text>
+      </g>`;
   });
 
   return { svg, w: W, h: H };

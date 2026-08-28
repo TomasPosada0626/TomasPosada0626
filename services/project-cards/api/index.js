@@ -277,7 +277,7 @@ function starIcon(cx, cy, r, color) {
   return `<polygon points="${pts.join(" ")}" fill="${color}"/>`;
 }
 
-async function buildCard(repoFull, x, y, theme, token) {
+async function buildCard(repoFull, x, y, theme, token, index) {
   const [owner, name] = repoFull.split("/");
   const [details, langBytes] = await Promise.all([
     fetchJSON(`https://api.github.com/repos/${owner}/${name}`, token),
@@ -296,7 +296,15 @@ async function buildCard(repoFull, x, y, theme, token) {
   const topAccent = theme.rank[0];
 
   const clipId = `${gid}-clip`;
+  // Staggered fade+rise on load, echoing the banner's SMIL animation
+  // so the whole README reads as one animated system instead of "one
+  // animated banner, then static images." Pure entrance, not a loop --
+  // fill="freeze" holds the settled state forever after it plays once.
+  const delay = (0.15 + index * 0.09).toFixed(2);
   let svg = `<g transform="translate(${x},${y})">`;
+  svg += `<g opacity="0">
+      <animate attributeName="opacity" from="0" to="1" begin="${delay}s" dur="0.5s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="translate" from="0 10" to="0 0" begin="${delay}s" dur="0.5s" fill="freeze"/>`;
   svg += `<defs>
       <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="${theme.card}"/>
@@ -359,7 +367,7 @@ async function buildCard(repoFull, x, y, theme, token) {
   svg += `<text x="34" y="${CARD_H - 14}" font-size="10.5" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${details.stargazers_count}  ·  updated ${relativeTime(details.pushed_at)}</text>`;
 
   svg += donut(CARD_W - 46, 46, 26, allLangs, theme.ring_track, theme.rank);
-  svg += `</g>`;
+  svg += `</g></g>`;
   return svg;
 }
 
@@ -384,7 +392,7 @@ module.exports = async (req, res) => {
 
     const cardResults = await Promise.allSettled(
       repos.map((r, i) =>
-        buildCard(r, PAD + (i % COLS) * (CARD_W + GAP), PAD + Math.floor(i / COLS) * (CARD_H + GAP), theme, token)
+        buildCard(r, PAD + (i % COLS) * (CARD_W + GAP), PAD + Math.floor(i / COLS) * (CARD_H + GAP), theme, token, i)
       )
     );
 
