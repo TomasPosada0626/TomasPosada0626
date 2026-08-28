@@ -145,11 +145,14 @@ function buildLangCard(user, theme) {
     name, pct: (size / grand) * 100, color: theme.rank[i % theme.rank.length],
   }));
 
-  const W = 380, H = 172;
+  // Matches buildStatsCard's H exactly -- side by side at width:49%
+  // each in the README, a mismatched height showed up as a jagged
+  // bottom edge between the two cards.
+  const W = 380, H = 194;
   let svg = `<rect width="${W}" height="${H}" rx="10" fill="${theme.card}" stroke="${theme.border}" stroke-width="1.2"/>`;
   svg += `<text x="24" y="30" font-size="14" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}">Most Used Languages</text>`;
 
-  const barX = 24, barY = 44, barW = W - 48, barH = 10;
+  const barX = 24, barY = 55, barW = W - 48, barH = 12;
   // Same fix as the project-card donuts: a real 1.1%/0.4% share is a
   // sub-pixel sliver at this bar width, invisible next to its
   // neighbour. Floor every segment to a minimum visible width,
@@ -178,7 +181,7 @@ function buildLangCard(user, theme) {
   svg += `</g>`;
   svg += `<rect x="${barX}" y="${barY}" width="${barW}" height="${barH}" rx="5" fill="none"/>`;
 
-  const legendY = 78;
+  const legendY = 92;
   langs.forEach((l, i) => {
     const col = i % 2, row = Math.floor(i / 2);
     const lx = 24 + col * 180;
