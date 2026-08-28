@@ -10,16 +10,20 @@
 //
 // GET /api/stats?username=TomasPosada0626&theme=dark|light
 
+// Same rank palette as index.js's THEMES (kept in sync by hand, not
+// imported -- each file under api/ is its own independent serverless
+// function): warm/cool alternating so adjacent ranks never sit as two
+// shades of the same temperature next to each other.
 const THEMES = {
   dark: {
     bg: "#0A101F", card: "#0D1526", border: "#22D3EE33",
     title: "#E7ECFB", desc: "#9AA4C0", chrome: "#22D3EE", accent: "#10B981",
-    rank: ["#A78BFA", "#22D3EE", "#10B981", "#F5B942", "#EF4444", "#8892B0"],
+    rank: ["#A78BFA", "#FBBF24", "#22D3EE", "#F87171", "#10B981", "#94A3B8"],
   },
   light: {
     bg: "#FFFFFF", card: "#F3F1FC", border: "#0891B233",
     title: "#1E2433", desc: "#5B6478", chrome: "#0891B2", accent: "#10B981",
-    rank: ["#7C3AED", "#0891B2", "#10B981", "#F5B942", "#EF4444", "#8892B0"],
+    rank: ["#7C3AED", "#D97706", "#0891B2", "#DC2626", "#10B981", "#64748B"],
   },
 };
 
@@ -139,11 +143,22 @@ function buildLangCard(user, theme) {
   svg += `<text x="24" y="30" font-size="14" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}">Most Used Languages</text>`;
 
   const barX = 24, barY = 44, barW = W - 48, barH = 10;
+  // Same fix as the project-card donuts: a real 1.1%/0.4% share is a
+  // sub-pixel sliver at this bar width, invisible next to its
+  // neighbour. Floor every segment to a minimum visible width,
+  // borrowed proportionally from segments with slack above it.
+  const minW = langs.length > 1 ? 10 : 0;
+  const rawW = langs.map((l) => (l.pct / 100) * barW);
+  const short = rawW.map((w) => w < minW);
+  const shortTotal = short.reduce((a, s) => a + (s ? minW : 0), 0);
+  const longRawTotal = rawW.reduce((a, w, i) => a + (short[i] ? 0 : w), 0);
+  const scale = longRawTotal > 0 ? (barW - shortTotal) / longRawTotal : 1;
+  const segW = rawW.map((w, i) => (short[i] ? minW : w * scale));
+
   let cx = barX;
-  langs.forEach((l) => {
-    const w = (l.pct / 100) * barW;
-    svg += `<rect x="${cx.toFixed(1)}" y="${barY}" width="${Math.max(w, 0).toFixed(1)}" height="${barH}" fill="${l.color}"/>`;
-    cx += w;
+  langs.forEach((l, i) => {
+    svg += `<rect x="${cx.toFixed(1)}" y="${barY}" width="${Math.max(segW[i], 0).toFixed(1)}" height="${barH}" fill="${l.color}"/>`;
+    cx += segW[i];
   });
   svg += `<rect x="${barX}" y="${barY}" width="${barW}" height="${barH}" rx="5" fill="none"/>`;
 
