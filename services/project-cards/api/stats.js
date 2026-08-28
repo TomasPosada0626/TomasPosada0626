@@ -29,7 +29,10 @@ query($login: String!) {
     contributionsCollection {
       totalCommitContributions
       totalPullRequestContributions
+      totalPullRequestReviewContributions
       totalIssueContributions
+      totalRepositoryContributions
+      restrictedContributionsCount
       totalRepositoriesWithContributedCommits
     }
     repositories(first: 100, ownerAffiliations: OWNER, isFork: false) {
@@ -72,20 +75,33 @@ function statRow(y, icon, label, value, theme) {
   return (
     `<text x="24" y="${y}" font-size="13" font-family="ui-monospace,Consolas,monospace" fill="${theme.chrome}">${icon}</text>` +
     `<text x="46" y="${y}" font-size="13" font-family="ui-monospace,Consolas,monospace" fill="${theme.desc}">${esc(label)}:</text>` +
-    `<text x="270" y="${y}" text-anchor="end" font-size="13" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${value}</text>`
+    `<text x="356" y="${y}" text-anchor="end" font-size="13" font-weight="700" font-family="ui-monospace,Consolas,monospace" fill="${theme.title}">${value}</text>`
   );
 }
 
 function buildStatsCard(user, theme) {
   const totalStars = user.repositories.nodes.reduce((a, r) => a + r.stargazerCount, 0);
   const c = user.contributionsCollection;
-  const W = 380, H = 172;
+  // GitHub's own profile graph total = every contribution type, not
+  // just commits -- this card was missing PR reviews and repo-creation
+  // (plus restrictedContributionsCount, contributions the querying
+  // token can't see the detail of but that still count), so it always
+  // undercounted vs. the number on the actual profile page.
+  const totalContributions =
+    c.totalCommitContributions +
+    c.totalPullRequestContributions +
+    c.totalPullRequestReviewContributions +
+    c.totalIssueContributions +
+    c.totalRepositoryContributions +
+    c.restrictedContributionsCount;
+  const W = 380, H = 194;
 
   const rows = [
+    ["◆", "Total Contributions (last yr)", totalContributions],
     ["★", "Total Stars Earned", totalStars],
-    ["○", "Total Commits (last yr)", c.totalCommitContributions],
-    ["⥇", "Total PRs", c.totalPullRequestContributions],
-    ["◉", "Total Issues", c.totalIssueContributions],
+    ["○", "Commits (last yr)", c.totalCommitContributions],
+    ["⥇", "PRs (last yr)", c.totalPullRequestContributions],
+    ["◉", "Issues (last yr)", c.totalIssueContributions],
     ["⌘", "Contributed To (last yr)", c.totalRepositoriesWithContributedCommits],
   ];
 
